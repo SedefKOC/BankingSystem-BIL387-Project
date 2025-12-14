@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Tomcat",
+      "type": "shell",
+      "command": "cd /Users/sedefkoc/Downloads/tomcat10/bin && ./catalina.sh run",
+      "problemMatcher": [],
+      "group": "build"
+    }
+  ]
+}

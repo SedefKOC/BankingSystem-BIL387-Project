@@ -1,3 +1,11 @@
+com/bankingsystem/entity/UserRole.class
+com/bankingsystem/controller/AdminHomeServlet.class
+com/bankingsystem/dao/UserDao.class
+com/bankingsystem/controller/CustomerHomeServlet.class
+com/bankingsystem/service/AuthService.class
 com/bankingsystem/controller/DatabaseHealthServlet.class
 com/bankingsystem/util/DatabaseConfig.class
 com/bankingsystem/util/DBConnectionManager.class
+com/bankingsystem/dao/impl/JdbcUserDao.class
+com/bankingsystem/controller/LoginServlet.class
+com/bankingsystem/service/AuthService$AuthResult.class

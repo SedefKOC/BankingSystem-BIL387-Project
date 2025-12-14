@@ -16,9 +16,39 @@
         <servlet-class>com.bankingsystem.controller.DatabaseHealthServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>com.bankingsystem.controller.LoginServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>AdminHomeServlet</servlet-name>
+        <servlet-class>com.bankingsystem.controller.AdminHomeServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>CustomerHomeServlet</servlet-name>
+        <servlet-class>com.bankingsystem.controller.CustomerHomeServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>DatabaseHealthServlet</servlet-name>
         <url-pattern>/health/db</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AdminHomeServlet</servlet-name>
+        <url-pattern>/admin/home</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CustomerHomeServlet</servlet-name>
+        <url-pattern>/customer/home</url-pattern>
     </servlet-mapping>
 
     <!-- We will register servlets via @WebServlet annotations or explicit mappings here as needed -->
