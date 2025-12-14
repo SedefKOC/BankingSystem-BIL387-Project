@@ -9,37 +9,135 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8" />
-    <title>SedefBank | Admin Paneli</title>
+    <title>SedefBank | Admin Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/css/login.css" />
-    <style>
-        .dashboard-card {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .info-pill {
-            padding: 12px 16px;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.8);
-            font-weight: 600;
-            box-shadow: 0 15px 35px rgba(11, 26, 51, 0.18);
-        }
-    </style>
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/css/admin-dashboard.css" />
 </head>
 <body>
-<main class="login-page">
-    <section class="brand">
-        <div class="logo-badge">SB</div>
-        <h1>SedefBank</h1>
-        <p>Admin panelindesin. Buradan sistemi yönetebilirsin.</p>
-    </section>
-    <section class="login-card dashboard-card">
-        <h2>Merhaba <%= username %>, Admin girişi yapıldı.</h2>
-        <p class="info-pill">Yeni kullanıcı onayları, raporlar ve sistem sağlığı buradan gelecek.</p>
-        <button class="btn-login" style="margin-top:12px;" disabled>Paneli yapılandır</button>
-        <a href="<%= request.getContextPath() %>/" style="color:#0f62fe;font-weight:600;text-decoration:none;">← Login ekranına dön</a>
-    </section>
-</main>
+<div class="admin-dashboard">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__brand">
+            <div class="logo">SB</div>
+            <div>
+                <span>SedefBank</span>
+                <small>Admin Portal</small>
+            </div>
+        </div>
+        <nav class="admin-sidebar__nav">
+            <a class="nav-item active" href="#">Dashboard</a>
+            <a class="nav-item" href="#">Customers</a>
+            <a class="nav-item" href="#">Accounts</a>
+            <a class="nav-item" href="#">QR Requests</a>
+            <a class="nav-item" href="#">Reports</a>
+        </nav>
+        <a class="logout" href="<%= request.getContextPath() %>/">Logout System</a>
+    </aside>
+
+    <main class="admin-content">
+        <header class="admin-header">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p class="muted">Merhaba <%= username %>, sistem durumunu buradan takip edebilirsin.</p>
+            </div>
+            <div class="header-actions">
+                <div class="search">
+                    <input type="search" placeholder="Search customers or transaction" />
+                </div>
+                <div class="profile-chip">
+                    <div>
+                        <strong><%= username %></strong>
+                        <span>Super Admin</span>
+                    </div>
+                    <div class="chip-avatar"><%= username.isEmpty() ? "??" : username.substring(0, 2).toUpperCase() %></div>
+                </div>
+            </div>
+        </header>
+
+        <section class="admin-stats">
+            <article class="stat-card">
+                <p>Active Customers</p>
+                <h2>24,592</h2>
+                <span class="positive">↑ +12% this month</span>
+            </article>
+            <article class="stat-card">
+                <p>Total Active Accounts</p>
+                <h2>38,145</h2>
+                <span class="positive">↑ +5.4% this week</span>
+            </article>
+            <article class="stat-card">
+                <p>Today's Volume</p>
+                <h2>₺ 45.2M</h2>
+                <span class="negative">↓ -2.1% vs yesterday</span>
+            </article>
+        </section>
+
+        <section class="admin-table">
+            <header>
+                <h3>Recent Transactions</h3>
+                <a href="#">View All</a>
+            </header>
+            <table>
+                <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>#TRX-98421</td>
+                    <td>Ahmet Kaya</td>
+                    <td>SWIFT Transfer</td>
+                    <td>$ 12,500.00</td>
+                    <td>Nov 21, 2025 14:30</td>
+                    <td><span class="badge badge-success">Completed</span></td>
+                    <td><a href="#">Details</a></td>
+                </tr>
+                <tr>
+                    <td>#TRX-98422</td>
+                    <td>Elif Demir</td>
+                    <td>QR Payment</td>
+                    <td>₺ 450.00</td>
+                    <td>Nov 21, 2025 14:28</td>
+                    <td><span class="badge badge-success">Completed</span></td>
+                    <td><a href="#">Details</a></td>
+                </tr>
+                <tr>
+                    <td>#TRX-98423</td>
+                    <td>Tech Solutions Ltd</td>
+                    <td>Corporate Loan</td>
+                    <td>₺ 500,000.00</td>
+                    <td>Nov 21, 2025 14:15</td>
+                    <td><span class="badge badge-warning">Pending Approval</span></td>
+                    <td><a href="#">Review</a></td>
+                </tr>
+                <tr>
+                    <td>#TRX-98424</td>
+                    <td>Mehmet Can</td>
+                    <td>Credit Card Bill</td>
+                    <td>₺ 8,240.50</td>
+                    <td>Nov 21, 2025 14:05</td>
+                    <td><span class="badge badge-error">Failed</span></td>
+                    <td><a href="#">Details</a></td>
+                </tr>
+                <tr>
+                    <td>#TRX-98425</td>
+                    <td>Selin Yılmaz</td>
+                    <td>EFT / Transfer</td>
+                    <td>₺ 2,100.00</td>
+                    <td>Nov 21, 2025 13:55</td>
+                    <td><span class="badge badge-success">Completed</span></td>
+                    <td><a href="#">Details</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
 </body>
 </html>
