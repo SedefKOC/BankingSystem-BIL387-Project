@@ -4,6 +4,10 @@
     if (username == null) {
         username = "";
     }
+    String initials = (String) request.getAttribute("homeInitials");
+    if (initials == null || initials.isBlank()) {
+        initials = "??";
+    }
 %>
 <!DOCTYPE html>
 <html lang="tr">
@@ -48,7 +52,7 @@
                         <strong><%= username %></strong>
                         <span>Super Admin</span>
                     </div>
-                    <div class="chip-avatar"><%= username.isEmpty() ? "??" : username.substring(0, 2).toUpperCase() %></div>
+                    <div class="chip-avatar"><%= initials %></div>
                 </div>
             </div>
         </header>

@@ -2,9 +2,11 @@ package com.bankingsystem.service;
 
 import com.bankingsystem.dao.UserDao;
 import com.bankingsystem.dao.impl.JdbcUserDao;
+import com.bankingsystem.entity.UserAccount;
 import com.bankingsystem.entity.UserRole;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class AuthService {
     private final UserDao userDao;
@@ -23,20 +25,19 @@ public class AuthService {
         String password = normalize(rawPassword);
 
         if (role == null) {
-            return new AuthResult(false, "Lütfen Admin veya Customer rolünü seç.", null);
+            return new AuthResult(false, "Lütfen Admin veya Customer rolünü seç.", null, null);
         }
         if (username.isEmpty() || password.isEmpty()) {
-            return new AuthResult(false, "Kullanıcı adı ve şifre boş bırakılamaz.", role);
+            return new AuthResult(false, "Kullanıcı adı ve şifre boş bırakılamaz.", role, null);
         }
         try {
-            boolean valid = userDao.validateCredentials(username, password, role);
-            if (valid) {
-                String roleMessage = role == null ? "" : role.getDisplayName() + " girişi";
-                return new AuthResult(true, roleMessage + " onaylandı. Hoş geldin!", role);
+            Optional<UserAccount> account = userDao.findByCredentials(username, password, role);
+            if (account.isPresent()) {
+                return new AuthResult(true, role.getDisplayName() + " girişi onaylandı. Hoş geldin " + account.get().getFullName() + "!", role, account.get());
             }
-            return new AuthResult(false, "Kullanıcı adı veya şifre hatalı.", role);
+            return new AuthResult(false, "Kullanıcı adı veya şifre hatalı.", role, null);
         } catch (SQLException e) {
-            return new AuthResult(false, "Şu an giriş yapılamıyor. Lütfen biraz sonra tekrar dene.", role);
+            return new AuthResult(false, "Şu an giriş yapılamıyor. Lütfen biraz sonra tekrar dene.", role, null);
         }
     }
 
@@ -44,6 +45,6 @@ public class AuthService {
         return value == null ? "" : value.trim();
     }
 
-    public record AuthResult(boolean success, String message, UserRole role) {
+    public record AuthResult(boolean success, String message, UserRole role, UserAccount account) {
     }
 }

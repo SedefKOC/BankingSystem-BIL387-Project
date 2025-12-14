@@ -17,7 +17,9 @@ public class AdminHomeServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/");
             return;
         }
-        req.setAttribute("homeUsername", sanitize(session.getAttribute("currentUsername")));
+        String displayName = asString(resolveDisplayName(session));
+        req.setAttribute("homeUsername", sanitize(displayName));
+        req.setAttribute("homeInitials", initials(displayName));
         req.getRequestDispatcher("/WEB-INF/views/admin-home.jsp").forward(req, resp);
     }
 
@@ -27,6 +29,29 @@ public class AdminHomeServlet extends HttpServlet {
         }
         Object role = session.getAttribute("currentUserRole");
         return role == requiredRole;
+    }
+
+    private Object resolveDisplayName(HttpSession session) {
+        Object fullName = session.getAttribute("currentFullName");
+        if (fullName instanceof String && !((String) fullName).isBlank()) {
+            return fullName;
+        }
+        return session.getAttribute("currentUsername");
+    }
+
+    private String asString(Object value) {
+        return value == null ? "" : value.toString();
+    }
+
+    private String initials(String value) {
+        String trimmed = value == null ? "" : value.trim();
+        if (trimmed.length() >= 2) {
+            return trimmed.substring(0, 2).toUpperCase();
+        }
+        if (!trimmed.isEmpty()) {
+            return trimmed.substring(0, 1).toUpperCase();
+        }
+        return "??";
     }
 
     private String sanitize(Object value) {

@@ -31,7 +31,15 @@ public class LoginServlet extends HttpServlet {
         if (result.success()) {
             HttpSession session = req.getSession(true);
             session.setAttribute("currentUserRole", result.role());
-            session.setAttribute("currentUsername", req.getParameter("username"));
+            if (result.account() != null) {
+                session.setAttribute("currentUsername", result.account().getUsername());
+                session.setAttribute("currentUserId", result.account().getId());
+                session.setAttribute("currentFirstName", result.account().getFirstName());
+                session.setAttribute("currentLastName", result.account().getLastName());
+                session.setAttribute("currentFullName", result.account().getFullName());
+            } else {
+                session.setAttribute("currentUsername", req.getParameter("username"));
+            }
             String redirect = result.role() == UserRole.ADMIN ? "/admin/home" : "/customer/home";
             resp.sendRedirect(req.getContextPath() + redirect);
             return;
