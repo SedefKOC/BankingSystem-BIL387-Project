@@ -2,8 +2,8 @@
 
 ## Java / Servlet Runtime
 - **Java Version:** 17 (LTS, Servlet 5+ compatible)
-- **Servlet Container:** Apache Tomcat 10.x (Servlet 5 API). Drop the compiled classes plus `web.xml`/JSPs under `src/main/webapp`.
-- **Build Output:** Compile Java sources into `build/classes` (or Tomcat `WEB-INF/classes`) using `javac` + `classpath` pointing to `lib/*` + Tomcat servlet-api jar.
+- **Servlet Container:** Apache Tomcat 10.x (Servlet 5 API). Deploy the generated WAR to Tomcat’s `webapps` directory.
+- **Build Output:** Maven handles compilation + packaging; run `mvn clean package` to produce `target/BankingSystem.war`.
 
 ## Directory Layout
 ```
@@ -40,7 +40,12 @@ BankingSystem/
 - `src/main/resources/db/README.md`: placeholder for SQL scripts.
 
 ## Next Setup Steps
-1. Place `jakarta.servlet-api-5.0.0.jar` (provided by Tomcat) and `postgresql-42.x.x.jar` inside `lib/` for compilation.
-2. Configure your IDE to compile `src/main/java` → `build/classes` and deploy `src/main/webapp` to Tomcat (or configure VS Code extension with Tomcat server pointing to this folder).
-3. Define environment config utility (e.g., `DBConfig`) under `util` for JDBC connection pooling.
+1. Install Maven (3.9+) and run `mvn clean package` to compile sources, process resources, and assemble the WAR artifact.
+2. Deploy `target/BankingSystem.war` to Tomcat 10.x (`$CATALINA_HOME/webapps`). Tomcat will explode it automatically.
+3. Configure IDE run/debug using the Maven project (import the root `pom.xml`).
 4. After confirmation, start implementing entities + DAO interfaces, then services, controllers, and JSP views following SOLID interface-driven structure.
+
+## Database Connection Test
+1. Ensure PostgreSQL is running locally with database `BankingSystemDb`, user `postgres`, password `7841` (override via `BANKING_DB_*` env vars if needed).
+2. Maven already includes the PostgreSQL driver in the WAR (`WEB-INF/lib`). Ensure Tomcat loads the freshly built artifact.
+3. Deploy the app to Tomcat and visit `http://localhost:8080/BankingSystem/health/db`. A 200 OK response indicates a successful JDBC connection; 500 status will print the SQL error message for troubleshooting.
