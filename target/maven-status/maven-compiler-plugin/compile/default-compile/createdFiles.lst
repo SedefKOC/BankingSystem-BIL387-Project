@@ -3,10 +3,14 @@ com/bankingsystem/service/AuthService.class
 com/bankingsystem/util/DBConnectionManager.class
 com/bankingsystem/dao/impl/JdbcUserDao.class
 com/bankingsystem/controller/LoginServlet.class
+com/bankingsystem/entity/TransactionRecord.class
 com/bankingsystem/controller/AdminHomeServlet.class
 com/bankingsystem/dao/UserDao.class
 com/bankingsystem/controller/CustomerHomeServlet.class
+com/bankingsystem/dao/impl/JdbcTransactionDao.class
 com/bankingsystem/controller/DatabaseHealthServlet.class
 com/bankingsystem/util/DatabaseConfig.class
+com/bankingsystem/service/CustomerDashboardService.class
+com/bankingsystem/dao/TransactionDao.class
 com/bankingsystem/entity/UserAccount.class
 com/bankingsystem/service/AuthService$AuthResult.class

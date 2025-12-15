@@ -1,6 +1,8 @@
 package com.bankingsystem.controller;
 
+import com.bankingsystem.entity.TransactionRecord;
 import com.bankingsystem.entity.UserRole;
+import com.bankingsystem.service.CustomerDashboardService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,8 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.List;
 
 public class CustomerHomeServlet extends HttpServlet {
+    private final CustomerDashboardService dashboardService = new CustomerDashboardService();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
@@ -20,6 +25,11 @@ public class CustomerHomeServlet extends HttpServlet {
         String displayName = asString(resolveDisplayName(session));
         req.setAttribute("homeUsername", sanitize(displayName));
         req.setAttribute("homeInitials", initials(displayName));
+        Long userId = (Long) session.getAttribute("currentUserId");
+        List<TransactionRecord> transactions = (userId == null)
+                ? java.util.Collections.emptyList()
+                : dashboardService.getRecentTransactions(userId, 5);
+        req.setAttribute("recentTransactions", transactions);
         req.getRequestDispatcher("/WEB-INF/views/customer-home.jsp").forward(req, resp);
     }
 

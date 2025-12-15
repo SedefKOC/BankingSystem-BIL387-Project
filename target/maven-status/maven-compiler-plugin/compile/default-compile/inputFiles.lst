@@ -2,10 +2,14 @@
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/controller/CustomerHomeServlet.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/controller/DatabaseHealthServlet.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/controller/LoginServlet.java
+/Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/dao/TransactionDao.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/dao/UserDao.java
+/Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/dao/impl/JdbcTransactionDao.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/dao/impl/JdbcUserDao.java
+/Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/entity/TransactionRecord.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/entity/UserAccount.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/entity/UserRole.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/service/AuthService.java
+/Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/service/CustomerDashboardService.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/util/DBConnectionManager.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/util/DatabaseConfig.java

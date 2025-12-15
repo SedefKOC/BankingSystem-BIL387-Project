@@ -1,4 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List"%>
+<%@ page import="java.time.format.DateTimeFormatter"%>
+<%@ page import="java.util.Locale"%>
+<%@ page import="java.text.DecimalFormat"%>
+<%@ page import="java.text.DecimalFormatSymbols"%>
+<%@ page import="com.bankingsystem.entity.TransactionRecord"%>
 <%
     String username = (String) request.getAttribute("homeUsername");
     if (username == null) {
@@ -8,6 +14,12 @@
     if (initials == null || initials.isBlank()) {
         initials = "??";
     }
+    List<TransactionRecord> recentTransactions = (List<TransactionRecord>) request.getAttribute("recentTransactions");
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, HH:mm", Locale.ENGLISH);
+    DecimalFormatSymbols trSymbols = new DecimalFormatSymbols(new Locale("tr", "TR"));
+    trSymbols.setGroupingSeparator('.');
+    trSymbols.setDecimalSeparator(',');
+    DecimalFormat amountFormat = new DecimalFormat("#,##0.00", trSymbols);
 %>
 <!DOCTYPE html>
 <html lang="tr">
@@ -21,7 +33,7 @@
 <div class="dashboard">
     <aside class="sidebar">
         <div class="sidebar__brand">
-            <div class="logo">SB</div>
+            <img src="<%=request.getContextPath()%>/assets/img/sedefbank-logo.svg" alt="SedefBank Logo" class="logo-image" />
             <span>SedefBank</span>
         </div>
         <nav class="sidebar__nav">
@@ -99,41 +111,40 @@
                 <tr>
                     <th>Transaction</th>
                     <th>Date</th>
-                    <th>Category</th>
                     <th>Amount</th>
                 </tr>
                 </thead>
                 <tbody>
+                <%
+                    if (recentTransactions != null && !recentTransactions.isEmpty()) {
+                        for (TransactionRecord record : recentTransactions) {
+                            java.math.BigDecimal amount = record.getAmount() == null ? java.math.BigDecimal.ZERO : record.getAmount();
+                            boolean positive = amount.signum() >= 0;
+                            String amountClass = positive ? "positive" : "negative";
+                            String amountText = (positive ? "+" : "-") + "₺" + amountFormat.format(amount.abs());
+                            String dateText = record.getTransactionDate() == null ? "-" : record.getTransactionDate().format(dateFormatter);
+                            String description = record.getDescription() == null ? "—" : record.getDescription()
+                                    .replace("&", "&amp;")
+                                    .replace("<", "&lt;")
+                                    .replace(">", "&gt;")
+                                    .replace("\"", "&quot;")
+                                    .replace("'", "&#x27;");
+                %>
                 <tr>
-                    <td> Migros Jet <span class="muted">Card •4821</span></td>
-                    <td>Nov 21, 14:30</td>
-                    <td>Shopping</td>
-                    <td class="negative">-₺450,90</td>
+                    <td><%= description %></td>
+                    <td><%= dateText %></td>
+                    <td class="<%= amountClass %>"><%= amountText %></td>
                 </tr>
+                <%
+                        }
+                    } else {
+                %>
                 <tr>
-                    <td>Ahmet Demir <span class="muted">IBAN Transfer</span></td>
-                    <td>Nov 20, 09:15</td>
-                    <td>Transfer</td>
-                    <td class="negative">-₺2.500,00</td>
+                    <td colspan="3">Henüz görüntülenecek işlem bulunmuyor.</td>
                 </tr>
-                <tr>
-                    <td>Company Inc. <span class="muted">Salary Payment</span></td>
-                    <td>Nov 15, 08:00</td>
-                    <td>Income</td>
-                    <td class="positive">+₺65.000,00</td>
-                </tr>
-                <tr>
-                    <td>Airbnb</td>
-                    <td>Nov 10, 19:45</td>
-                    <td>Travel</td>
-                    <td class="negative">-₺3.200,00</td>
-                </tr>
-                <tr>
-                    <td>Netflix</td>
-                    <td>Nov 05, 12:00</td>
-                    <td>Entertainment</td>
-                    <td class="negative">-₺109,99</td>
-                </tr>
+                <%
+                    }
+                %>
                 </tbody>
             </table>
         </section>

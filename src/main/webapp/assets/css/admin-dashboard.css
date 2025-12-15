@@ -47,14 +47,12 @@ body {
     font-weight: 600;
 }
 
-.admin-sidebar__brand .logo {
+.admin-sidebar__brand .logo-image {
     width: 48px;
     height: 48px;
     border-radius: 16px;
     border: 2px solid rgba(255, 255, 255, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
 }
 
 .admin-sidebar__brand small {

@@ -22,7 +22,7 @@
 <body>
 <main class="login-page">
     <section class="brand">
-        <div class="logo-badge">SB</div>
+        <img src="<%=request.getContextPath()%>/assets/img/sedefbank-logo.svg" alt="SedefBank Logo" class="logo-image" />
         <h1>SedefBank</h1>
         <p>Dijital bankacılık hesabına güvenle giriş yap.111xxx666xx</p>
     </section>

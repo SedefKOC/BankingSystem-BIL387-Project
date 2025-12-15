@@ -21,7 +21,7 @@
 <div class="admin-dashboard">
     <aside class="admin-sidebar">
         <div class="admin-sidebar__brand">
-            <div class="logo">SB</div>
+            <img src="<%=request.getContextPath()%>/assets/img/sedefbank-logo.svg" alt="SedefBank Logo" class="logo-image" />
             <div>
                 <span>SedefBank</span>
                 <small>Admin Portal</small>
