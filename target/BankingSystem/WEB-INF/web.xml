@@ -31,6 +31,26 @@
         <servlet-class>com.bankingsystem.controller.CustomerHomeServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>CustomerAccountsServlet</servlet-name>
+        <servlet-class>com.bankingsystem.controller.CustomerAccountsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>CustomerAccountDetailsServlet</servlet-name>
+        <servlet-class>com.bankingsystem.controller.CustomerAccountDetailsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>CustomerTransfersServlet</servlet-name>
+        <servlet-class>com.bankingsystem.controller.CustomerTransfersServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>CustomerProfileServlet</servlet-name>
+        <servlet-class>com.bankingsystem.controller.CustomerProfileServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>DatabaseHealthServlet</servlet-name>
         <url-pattern>/health/db</url-pattern>
@@ -49,6 +69,26 @@
     <servlet-mapping>
         <servlet-name>CustomerHomeServlet</servlet-name>
         <url-pattern>/customer/home</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CustomerAccountsServlet</servlet-name>
+        <url-pattern>/customer/accounts</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CustomerAccountDetailsServlet</servlet-name>
+        <url-pattern>/customer/accounts/detail</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CustomerTransfersServlet</servlet-name>
+        <url-pattern>/customer/transfers</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CustomerProfileServlet</servlet-name>
+        <url-pattern>/customer/profile</url-pattern>
     </servlet-mapping>
 
     <!-- We will register servlets via @WebServlet annotations or explicit mappings here as needed -->

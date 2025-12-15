@@ -25,6 +25,7 @@ public class CustomerHomeServlet extends HttpServlet {
         String displayName = asString(resolveDisplayName(session));
         req.setAttribute("homeUsername", sanitize(displayName));
         req.setAttribute("homeInitials", initials(displayName));
+        req.setAttribute("navActive", "overview");
         Long userId = (Long) session.getAttribute("currentUserId");
         List<TransactionRecord> transactions = java.util.Collections.emptyList();
         java.math.BigDecimal totalBalance = java.math.BigDecimal.ZERO;

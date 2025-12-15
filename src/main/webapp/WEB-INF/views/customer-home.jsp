@@ -36,6 +36,12 @@
     <link rel="stylesheet" href="<%=request.getContextPath()%>/assets/css/customer-dashboard.css" />
 </head>
 <body>
+<%
+    String navActive = (String) request.getAttribute("navActive");
+    if (navActive == null) {
+        navActive = "overview";
+    }
+%>
 <div class="dashboard">
     <aside class="sidebar">
         <div class="sidebar__brand">
@@ -43,14 +49,11 @@
             <span>SedefBank</span>
         </div>
         <nav class="sidebar__nav">
-            <a class="nav-item active" href="#">
-                <span>Overview</span>
-            </a>
-            <a class="nav-item" href="#">Accounts</a>
-            <a class="nav-item" href="#">Transfers</a>
-            <a class="nav-item" href="#">QR Operations</a>
+            <a class="nav-item <%= "overview".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/home">Overview</a>
+            <a class="nav-item <%= "accounts".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/accounts">Accounts</a>
+            <a class="nav-item <%= "transfers".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/transfers">Transfers</a>
             <a class="nav-item" href="#">Market Data</a>
-            <a class="nav-item" href="#">Profile</a>
+            <a class="nav-item <%= "profile".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/profile">Profile</a>
         </nav>
         <a class="logout" href="<%= request.getContextPath() %>/">
             Logout
