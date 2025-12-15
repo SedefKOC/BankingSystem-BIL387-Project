@@ -44,8 +44,8 @@ public class CustomerTransferService {
             transactionDao.insertTransaction(userId, toAccountId, null, description, amount, date);
             return TransferResult.success("Transfer tamamlandı.");
         } catch (SQLException e) {
-            Logger log = Logger.getLogger(JdbcUserDao.class.getName());
- log.info("HATA!!!!!!!!!!!!!!!!: " + e);
+            /* Logger log = Logger.getLogger(JdbcUserDao.class.getName());
+            log.info("HATA!!!!!!!!!!!!!!!!: " + e); */
             return TransferResult.error("Transfer kaydedilirken hata oluştu.");
         }
     }

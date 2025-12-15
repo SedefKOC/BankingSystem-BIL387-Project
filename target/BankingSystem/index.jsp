@@ -24,7 +24,7 @@
     <section class="brand">
         <img src="<%=request.getContextPath()%>/assets/img/sedefbank-logo.svg" alt="SedefBank Logo" class="logo-image" />
         <h1>SedefBank</h1>
-        <p>Dijital bankacılık hesabına güvenle giriş yap.111xxx666xx</p>
+        <p>Dijital bankacılık hesabına güvenle giriş yap.</p>
     </section>
 
     <section class="login-card">
@@ -59,13 +59,13 @@
                 <input class="form-input" type="password" name="password" placeholder="••••••••" maxlength="64" autocomplete="current-password" required />
             </div>
 
-            <div class="form-actions">
+            <!-- <div class="form-actions">
                 <label>
                     <input type="checkbox" name="remember" disabled />
                     Keep me logged in
                 </label>
                 <a href="#">Forgot Password?</a>
-            </div>
+            </div> -->
 
             <button type="submit" class="btn-login">Login</button>
         </form>

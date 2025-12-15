@@ -27,12 +27,13 @@
                 <small>Admin Portal</small>
             </div>
         </div>
+        <%
+            String navActive = (String) request.getAttribute("adminNavActive");
+        %>
         <nav class="admin-sidebar__nav">
-            <a class="nav-item <%= "dashboard".equals(request.getAttribute("adminNavActive")) ? "active" : "" %>" href="<%=request.getContextPath()%>/admin/dashboard">Dashboard</a>
-            <a class="nav-item" href="#">Customers</a>
-            <a class="nav-item" href="#">Accounts</a>
-            <a class="nav-item" href="#">QR Requests</a>
-            <a class="nav-item" href="#">Reports</a>
+            <a class="nav-item <%= "dashboard".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/admin/dashboard">Dashboard</a>
+            <a class="nav-item <%= "customers".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/admin/customers">Customers</a>
+            <a class="nav-item <%= "accounts".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/admin/accounts">Accounts</a>
         </nav>
         <a class="logout" href="<%= request.getContextPath() %>/">Logout System</a>
     </aside>
