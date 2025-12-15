@@ -37,6 +37,11 @@ public class JdbcTransactionDao implements TransactionDao {
             INSERT INTO transactions (user_id, account_id, iban, transactions, transaction_date, amount)
             VALUES (?, ?, ?, ?, ?, ?)
             """;
+    private static final String UPDATE_BALANCE_SQL = """
+            UPDATE accounts
+            SET balance = balance + ?
+            WHERE id = ?
+            """;
     @Override
     public List<TransactionRecord> findLatestByUserId(long userId, int limit) throws SQLException {
         List<TransactionRecord> records = new ArrayList<>();
@@ -98,18 +103,36 @@ public class JdbcTransactionDao implements TransactionDao {
 
     @Override
     public void insertTransaction(long userId, long accountId, String iban, String description, BigDecimal amount, java.time.LocalDate date) throws SQLException {
-        try (Connection connection = DBConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(INSERT_SQL)) {
-            statement.setLong(1, userId);
-            statement.setLong(2, accountId);
-            statement.setString(3, iban);
-            statement.setString(4, description);
-            java.sql.Timestamp timestamp = date == null ?
-                    java.sql.Timestamp.valueOf(LocalDateTime.now()) :
-                    java.sql.Timestamp.valueOf(date.atStartOfDay());
-            statement.setTimestamp(5, timestamp);
-            statement.setBigDecimal(6, amount);
-            statement.executeUpdate();
+        try (Connection connection = DBConnectionManager.getConnection()) {
+            boolean originalAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            try (PreparedStatement insertStatement = connection.prepareStatement(INSERT_SQL);
+                 PreparedStatement updateStatement = connection.prepareStatement(UPDATE_BALANCE_SQL)) {
+                insertStatement.setLong(1, userId);
+                insertStatement.setLong(2, accountId);
+                insertStatement.setString(3, iban);
+                insertStatement.setString(4, description);
+                java.sql.Timestamp timestamp = date == null ?
+                        java.sql.Timestamp.valueOf(LocalDateTime.now()) :
+                        java.sql.Timestamp.valueOf(date.atStartOfDay());
+                insertStatement.setTimestamp(5, timestamp);
+                insertStatement.setBigDecimal(6, amount);
+                insertStatement.executeUpdate();
+
+                updateStatement.setBigDecimal(1, amount);
+                updateStatement.setLong(2, accountId);
+                int updated = updateStatement.executeUpdate();
+                if (updated == 0) {
+                    connection.rollback();
+                    throw new SQLException("Account not found for balance update: " + accountId);
+                }
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(originalAutoCommit);
+            }
         }
     }
 }

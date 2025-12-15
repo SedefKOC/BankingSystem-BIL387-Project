@@ -226,7 +226,7 @@
                 </div>
             </section>
 
-            <section class="history-card">
+            <!-- <section class="history-card">
                 <h3>Last 5 Transfers</h3>
                 <%
                     if (transferHistory.isEmpty()) {
@@ -250,7 +250,7 @@
                         }
                     }
                 %>
-            </section>
+            </section> -->
         </div>
     </main>
 </div>
