@@ -26,7 +26,6 @@ public class JdbcTransactionDao implements TransactionDao {
             FROM transactions
             WHERE user_id = ?
             """;
-
     @Override
     public List<TransactionRecord> findLatestByUserId(long userId, int limit) throws SQLException {
         List<TransactionRecord> records = new ArrayList<>();
@@ -63,4 +62,5 @@ public class JdbcTransactionDao implements TransactionDao {
         }
         return BigDecimal.ZERO;
     }
+
 }

@@ -11,8 +11,6 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,12 +30,13 @@ public class CustomerAccountsServlet extends HttpServlet {
         req.setAttribute("navActive", "accounts");
 
         Long userId = (Long) session.getAttribute("currentUserId");
-        BigDecimal totalBalance = BigDecimal.ZERO;
-        if (userId != null) {
-            totalBalance = dashboardService.getTotalBalance(userId);
+        if (userId == null) {
+            resp.sendRedirect(req.getContextPath() + "/");
+            return;
         }
+        BigDecimal totalBalance = dashboardService.getTotalBalance(userId);
         req.setAttribute("totalBalance", totalBalance);
-        req.setAttribute("accounts", sampleAccounts());
+        req.setAttribute("accounts", dashboardService.getAccounts(userId));
         req.getRequestDispatcher("/WEB-INF/views/customer-accounts.jsp").forward(req, resp);
     }
 
@@ -47,14 +46,6 @@ public class CustomerAccountsServlet extends HttpServlet {
         }
         Object role = session.getAttribute("currentUserRole");
         return role == UserRole.CUSTOMER;
-    }
-
-    private List<AccountSummary> sampleAccounts() {
-        return List.of(
-                new AccountSummary(1L, "Checking Account / Vadesiz TL", "TR45 0001 2980 4582 1923 01", "₺", new BigDecimal("24582.90"), "Available"),
-                new AccountSummary(2L, "USD Savings / Vadeli", "TR45 9001 3008 1284 5592 02", "$", new BigDecimal("12450.00"), "Available"),
-                new AccountSummary(3L, "Gold Investment / Altın", "TR45 0001 4080 5521 8821 03", "gr", new BigDecimal("120.5"), "XAU")
-        );
     }
 
     public static final class CustomerViewHelper {
