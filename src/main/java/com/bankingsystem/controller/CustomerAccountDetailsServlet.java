@@ -1,7 +1,7 @@
 package com.bankingsystem.controller;
 
 import com.bankingsystem.entity.AccountSummary;
-import com.bankingsystem.entity.TransactionRecord;
+//import com.bankingsystem.entity.TransactionRecord;
 import com.bankingsystem.entity.UserRole;
 import com.bankingsystem.service.CustomerDashboardService;
 import jakarta.servlet.ServletException;
@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.List;
+//import java.util.List;
 import java.util.Optional;
 
 public class CustomerAccountDetailsServlet extends HttpServlet {

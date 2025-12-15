@@ -1,4 +1,16 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.bankingsystem.entity.UserProfile"%>
+<%! private String escapeHtml(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#x27;");
+    }
+%>
 <%
     String username = (String) request.getAttribute("homeUsername");
     if (username == null) {
@@ -13,6 +25,19 @@
         navActive = "profile";
     }
     Long customerId = (Long) request.getAttribute("customerId");
+    UserProfile profile = (UserProfile) request.getAttribute("profile");
+    if (profile == null) {
+        profile = new UserProfile(customerId == null ? 0 : customerId, "", "", "", "", "", "", "");
+    }
+    String successMessage = (String) request.getAttribute("successMessage");
+    String errorMessage = (String) request.getAttribute("errorMessage");
+    String firstNameVal = escapeHtml(profile.getFirstName());
+    String lastNameVal = escapeHtml(profile.getLastName());
+    String emailVal = escapeHtml(profile.getEmail());
+    String phoneVal = escapeHtml(profile.getPhoneNumber());
+    String nationalIdVal = escapeHtml(profile.getNationalId());
+    String birthDateVal = profile.getBirthDate() == null ? "" : profile.getBirthDate();
+    String addressVal = escapeHtml(profile.getAddress());
 %>
 <!DOCTYPE html>
 <html lang="tr">
@@ -63,6 +88,22 @@
             border-radius: 14px;
             border: 1px solid #dde3f0;
         }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .alert-success {
+            background: rgba(0, 196, 140, 0.1);
+            color: #00a874;
+            border: 1px solid rgba(0, 196, 140, 0.3);
+        }
+        .alert-error {
+            background: rgba(255, 82, 82, 0.1);
+            color: #ff5252;
+            border: 1px solid rgba(255, 82, 82, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -86,6 +127,11 @@
         <header class="content__header">
             <div>
                 <p class="subtitle">My Profile</p>
+                <% if (successMessage != null) { %>
+                <div class="alert alert-success"><%= successMessage %></div>
+                <% } else if (errorMessage != null) { %>
+                <div class="alert alert-error"><%= errorMessage %></div>
+                <% } %>
             </div>
             <div class="profile-chip">
                 <div>
@@ -106,58 +152,64 @@
             </section>
 
             <section class="profile-card">
+                <form method="post" action="<%=request.getContextPath()%>/customer/profile">
+                    <input type="hidden" name="action" value="personal" />
                 <h3>Personal Information</h3>
                 <div class="form-grid" style="margin-top:16px;">
                     <div>
                         <label>First Name</label>
-                        <input type="text" value="Ali" />
+                        <input type="text" name="firstName" value="<%= firstNameVal %>" />
                     </div>
                     <div>
                         <label>Last Name</label>
-                        <input type="text" value="Yılmaz" />
+                        <input type="text" name="lastName" value="<%= lastNameVal %>" />
                     </div>
                     <div>
                         <label>Email Address</label>
-                        <input type="email" value="ali.yilmaz@example.com" />
+                        <input type="email" name="email" value="<%= emailVal %>" />
                     </div>
                     <div>
                         <label>Phone Number</label>
-                        <input type="text" value="+90 555 123 45 67" />
+                        <input type="text" name="phoneNumber" value="<%= phoneVal %>" />
                     </div>
                     <div>
                         <label>National ID (TCKN)</label>
-                        <input type="text" value="12345678901" />
+                        <input type="text" name="nationalId" value="<%= nationalIdVal %>" />
                     </div>
                     <div>
                         <label>Date of Birth</label>
-                        <input type="text" value="15.05.1985" />
+                        <input type="date" name="birthDate" value="<%= birthDateVal %>" />
                     </div>
                     <div style="grid-column: span 2;">
                         <label>Home Address</label>
-                        <textarea rows="2">Caddebostan Mah. Bağdat Cad. No:123/4 Kadıköy/İstanbul</textarea>
+                        <textarea rows="2" name="address"><%= addressVal %></textarea>
                     </div>
                 </div>
-                <button class="btn-login" style="margin-top:16px;width:auto;padding:12px 24px;">Save Changes</button>
+                <button type="submit" class="btn-login" style="margin-top:16px;width:auto;padding:12px 24px;">Save Changes</button>
+                </form>
             </section>
         </div>
 
         <section class="profile-card" style="margin-top:24px;">
+            <form method="post" action="<%=request.getContextPath()%>/customer/profile">
+                <input type="hidden" name="action" value="password" />
             <h3>Security Settings</h3>
             <div class="form-grid" style="margin-top:16px;">
                 <div>
                     <label>Current Password</label>
-                    <input type="password" value="********" />
+                    <input type="password" name="currentPassword" value="********" />
                 </div>
                 <div>
                     <label>New Password</label>
-                    <input type="password" placeholder="Enter new password" />
+                    <input type="password" name="newPassword" placeholder="Enter new password" />
                 </div>
                 <div>
                     <label>Confirm Password</label>
-                    <input type="password" placeholder="Repeat new password" />
+                    <input type="password" name="confirmPassword" placeholder="Repeat new password" />
                 </div>
             </div>
-            <button class="btn-login" style="margin-top:16px;width:auto;padding:12px 24px;">Update Password</button>
+            <button type="submit" class="btn-login" style="margin-top:16px;width:auto;padding:12px 24px;">Update Password</button>
+            </form>
         </section>
     </main>
 </div>
