@@ -21,6 +21,11 @@ public class JdbcTransactionDao implements TransactionDao {
             ORDER BY transaction_date DESC
             LIMIT ?
             """;
+    private static final String SUM_SQL = """
+            SELECT COALESCE(SUM(amount), 0) AS total
+            FROM transactions
+            WHERE user_id = ?
+            """;
 
     @Override
     public List<TransactionRecord> findLatestByUserId(long userId, int limit) throws SQLException {
@@ -42,5 +47,20 @@ public class JdbcTransactionDao implements TransactionDao {
             }
         }
         return records;
+    }
+
+    @Override
+    public BigDecimal sumAmountByUserId(long userId) throws SQLException {
+        try (Connection connection = DBConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(SUM_SQL)) {
+            statement.setLong(1, userId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    BigDecimal total = resultSet.getBigDecimal("total");
+                    return total == null ? BigDecimal.ZERO : total;
+                }
+            }
+        }
+        return BigDecimal.ZERO;
     }
 }

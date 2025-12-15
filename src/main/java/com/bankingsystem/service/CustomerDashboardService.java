@@ -4,6 +4,7 @@ import com.bankingsystem.dao.TransactionDao;
 import com.bankingsystem.dao.impl.JdbcTransactionDao;
 import com.bankingsystem.entity.TransactionRecord;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +25,14 @@ public class CustomerDashboardService {
             return transactionDao.findLatestByUserId(userId, limit);
         } catch (SQLException e) {
             return Collections.emptyList();
+        }
+    }
+
+    public BigDecimal getTotalBalance(long userId) {
+        try {
+            return transactionDao.sumAmountByUserId(userId);
+        } catch (SQLException e) {
+            return BigDecimal.ZERO;
         }
     }
 }

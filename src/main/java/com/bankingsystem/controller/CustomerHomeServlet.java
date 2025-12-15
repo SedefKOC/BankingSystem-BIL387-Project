@@ -26,10 +26,14 @@ public class CustomerHomeServlet extends HttpServlet {
         req.setAttribute("homeUsername", sanitize(displayName));
         req.setAttribute("homeInitials", initials(displayName));
         Long userId = (Long) session.getAttribute("currentUserId");
-        List<TransactionRecord> transactions = (userId == null)
-                ? java.util.Collections.emptyList()
-                : dashboardService.getRecentTransactions(userId, 5);
+        List<TransactionRecord> transactions = java.util.Collections.emptyList();
+        java.math.BigDecimal totalBalance = java.math.BigDecimal.ZERO;
+        if (userId != null) {
+            transactions = dashboardService.getRecentTransactions(userId, 5);
+            totalBalance = dashboardService.getTotalBalance(userId);
+        }
         req.setAttribute("recentTransactions", transactions);
+        req.setAttribute("totalBalance", totalBalance);
         req.getRequestDispatcher("/WEB-INF/views/customer-home.jsp").forward(req, resp);
     }
 

@@ -20,6 +20,12 @@
     trSymbols.setGroupingSeparator('.');
     trSymbols.setDecimalSeparator(',');
     DecimalFormat amountFormat = new DecimalFormat("#,##0.00", trSymbols);
+    java.math.BigDecimal totalBalance = (java.math.BigDecimal) request.getAttribute("totalBalance");
+    if (totalBalance == null) {
+        totalBalance = java.math.BigDecimal.ZERO;
+    }
+    boolean totalPositive = totalBalance.signum() >= 0;
+    String totalText = (totalPositive ? "" : "-") + "₺ " + amountFormat.format(totalBalance.abs());
 %>
 <!DOCTYPE html>
 <html lang="tr">
@@ -92,7 +98,7 @@
         <section class="balance">
             <div>
                 <p>Total Assets Balance</p>
-                <h2>₺ 842.350,75</h2>
+                <h2 class='<%= totalPositive ? "positive" : "negative" %>'><%= totalText %></h2>
                 <div class="balance__actions">
                     <button>Deposit Money</button>
                     <button>New Transfer</button>
