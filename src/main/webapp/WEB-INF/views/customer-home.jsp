@@ -92,9 +92,9 @@
                 <span class="negative">▼ 0.15%</span>
             </article>
             <article class="loan-card">
-                <h4>Instant Loan</h4>
+                <!-- <h4>Instant Loan</h4>
                 <p>Get up to 100.000₺ instantly.</p>
-                <button type="button">Apply Now</button>
+                <button type="button">Apply Now</button> -->
             </article>
         </section>
 
