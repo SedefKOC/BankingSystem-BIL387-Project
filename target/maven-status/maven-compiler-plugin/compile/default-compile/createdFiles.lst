@@ -17,6 +17,7 @@ com/bankingsystem/entity/UserAccount.class
 com/bankingsystem/service/AuthService$AuthResult.class
 com/bankingsystem/controller/CustomerAccountsServlet.class
 com/bankingsystem/service/AuthService.class
+com/bankingsystem/service/CustomerTransferService.class
 com/bankingsystem/controller/CustomerAccountsServlet$CustomerViewHelper.class
 com/bankingsystem/dao/impl/JdbcUserProfileDao.class
 com/bankingsystem/util/DBConnectionManager.class
@@ -28,3 +29,4 @@ com/bankingsystem/controller/DatabaseHealthServlet.class
 com/bankingsystem/util/DatabaseConfig.class
 com/bankingsystem/service/CustomerDashboardService.class
 com/bankingsystem/dao/TransactionDao.class
+com/bankingsystem/service/CustomerTransferService$TransferResult.class

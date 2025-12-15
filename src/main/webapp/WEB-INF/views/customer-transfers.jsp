@@ -16,6 +16,8 @@
     if (navActive == null) {
         navActive = "transfers";
     }
+    String successMessage = (String) request.getAttribute("successMessage");
+    String errorMessage = (String) request.getAttribute("errorMessage");
     List<TransactionRecord> transferHistory = (List<TransactionRecord>) request.getAttribute("transferHistory");
     if (transferHistory == null) {
         transferHistory = java.util.Collections.emptyList();
@@ -83,6 +85,42 @@
         .history-item:last-child {
             border-bottom: none;
         }
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 16px;
+            border: 1px solid #dee3f0;
+            background: #f4f6fb;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+        .tab-button.active {
+            background: linear-gradient(135deg, #103dff, #06208d);
+            color: #fff;
+            border-color: transparent;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .alert {
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .alert-success {
+            background: #e1f7ef;
+            color: #077346;
+        }
+        .alert-error {
+            background: #fdeaea;
+            color: #c62828;
+        }
     </style>
 </head>
 <body>
@@ -118,31 +156,74 @@
         </header>
 
         <div class="transfer-grid">
-            <section class="transfer-card transfer-form">
+            <section class="transfer-card">
                 <h3>Transfer Between Accounts</h3>
-                <div style="margin:16px 0;">
-                    <label>Transfer Type</label>
-                    <div style="display:flex;gap:12px;">
-                        <label><input type="radio" name="type" checked /> My Accounts</label>
-                        <label><input type="radio" name="type" /> Another Person / IBAN</label>
-                        <label><input type="radio" name="type" /> International (SWIFT)</label>
-                    </div>
+                <%
+                    if (successMessage != null) {
+                %>
+                <div class="alert alert-success"><%= successMessage %></div>
+                <%
+                    } else if (errorMessage != null) {
+                %>
+                <div class="alert alert-error"><%= errorMessage %></div>
+                <%
+                    }
+                %>
+                <div class="tabs">
+                    <div class="tab-button active" data-tab="myAccounts">My Accounts</div>
+                    <div class="tab-button" data-tab="otherPerson">Another Person / IBAN</div>
                 </div>
-                <label>From Account</label>
-                <select>
-                    <option>Vadesiz TL - TR45..1923 (₺ 24,582.90)</option>
-                </select>
-                <label>To Account</label>
-                <select>
-                    <option>Select Recipient</option>
-                </select>
-                <label>Amount</label>
-                <input type="number" placeholder="₺ 0.00" />
-                <label>Transfer Date</label>
-                <input type="date" value="<%= java.time.LocalDate.now() %>" />
-                <label>Description (Optional)</label>
-                <textarea rows="3" placeholder="e.g. Rent payment, Debt return"></textarea>
-                <button type="button">Confirm Transfer</button>
+                <%
+                    List<com.bankingsystem.entity.AccountSummary> transferAccounts =
+                            (List<com.bankingsystem.entity.AccountSummary>) request.getAttribute("transferAccounts");
+                    if (transferAccounts == null) {
+                        transferAccounts = java.util.Collections.emptyList();
+                    }
+                %>
+                <div id="myAccounts" class="tab-content active">
+                    <form method="post" class="transfer-form" data-action="myAccounts">
+                        <input type="hidden" name="action" value="myAccounts" />
+                        <label for="fromAccountIdMy">From Account</label>
+                        <select id="fromAccountIdMy" name="fromAccountId" required>
+                            <% for (com.bankingsystem.entity.AccountSummary account : transferAccounts) { %>
+                            <option value="<%= account.getId() %>"><%= account.getName() %> - <%= account.getIban() %></option>
+                            <% } %>
+                        </select>
+                        <label for="toAccountIdMy">To Account</label>
+                        <select id="toAccountIdMy" name="toAccountId" required>
+                            <% for (com.bankingsystem.entity.AccountSummary account : transferAccounts) { %>
+                            <option value="<%= account.getId() %>"><%= account.getName() %> - <%= account.getIban() %></option>
+                            <% } %>
+                        </select>
+                        <label for="amountMy">Amount</label>
+                        <input id="amountMy" type="number" step="0.01" min="0.01" name="amount" placeholder="₺ 0.00" required />
+                        <label for="dateMy">Transfer Date</label>
+                        <input id="dateMy" type="date" name="transactionDate" value="<%= java.time.LocalDate.now() %>" required />
+                        <label for="descMy">Description (Optional)</label>
+                        <textarea id="descMy" rows="3" name="description" placeholder="e.g. Rent payment, Debt return"></textarea>
+                        <button type="submit">Confirm Transfer</button>
+                    </form>
+                </div>
+                <div id="otherPerson" class="tab-content">
+                    <form method="post" class="transfer-form" data-action="otherPerson">
+                        <input type="hidden" name="action" value="otherPerson" />
+                        <label for="fromAccountIdOther">From Account</label>
+                        <select id="fromAccountIdOther" name="fromAccountId" required>
+                            <% for (com.bankingsystem.entity.AccountSummary account : transferAccounts) { %>
+                            <option value="<%= account.getId() %>"><%= account.getName() %> - <%= account.getIban() %></option>
+                            <% } %>
+                        </select>
+                        <label for="ibanOther">To Account (IBAN)</label>
+                        <input id="ibanOther" type="text" name="toAccountIban" placeholder="TRXX XXXX XXXX XXXX" required />
+                        <label for="amountOther">Amount</label>
+                        <input id="amountOther" type="number" step="0.01" min="0.01" name="amount" placeholder="₺ 0.00" required />
+                        <label for="dateOther">Transfer Date</label>
+                        <input id="dateOther" type="date" name="transactionDate" value="<%= java.time.LocalDate.now() %>" required />
+                        <label for="descOther">Description (Optional)</label>
+                        <textarea id="descOther" rows="3" name="description" placeholder="e.g. Rent payment, Debt return"></textarea>
+                        <button type="submit">Confirm Transfer</button>
+                    </form>
+                </div>
             </section>
 
             <section class="history-card">
@@ -173,5 +254,57 @@
         </div>
     </main>
 </div>
+<script>
+    (function () {
+        const tabs = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                const target = document.getElementById(tab.getAttribute('data-tab'));
+                if (target) {
+                    target.classList.add('active');
+                }
+            });
+        });
+        const showAlert = (message) => {
+            alert(message);
+        };
+        document.querySelectorAll('.transfer-form').forEach(form => {
+            form.addEventListener('submit', (event) => {
+                const action = form.dataset.action;
+                const amountInput = form.querySelector('input[name="amount"]');
+                const dateInput = form.querySelector('input[name="transactionDate"]');
+                const amount = parseFloat(amountInput.value);
+                if (isNaN(amount) || amount <= 0) {
+                    event.preventDefault();
+                    showAlert('Tutar 0\'dan büyük olmalı.');
+                    return;
+                }
+                if (!dateInput.value) {
+                    event.preventDefault();
+                    showAlert('Lütfen geçerli bir tarih seçin.');
+                    return;
+                }
+                if (action === 'myAccounts') {
+                    const from = form.querySelector('select[name="fromAccountId"]').value;
+                    const to = form.querySelector('select[name="toAccountId"]').value;
+                    if (from === to) {
+                        event.preventDefault();
+                        showAlert('Kaynak ve hedef hesap farklı olmalı.');
+                    }
+                } else if (action === 'otherPerson') {
+                    const iban = form.querySelector('input[name="toAccountIban"]').value.trim();
+                    if (!iban) {
+                        event.preventDefault();
+                        showAlert('IBAN boş olamaz.');
+                    }
+                }
+            });
+        });
+    })();
+</script>
 </body>
 </html>

@@ -9,4 +9,6 @@ public interface TransactionDao {
     List<TransactionRecord> findLatestByUserId(long userId, int limit) throws SQLException;
     java.math.BigDecimal sumAmountByUserId(long userId) throws SQLException;
     List<TransactionRecord> findByAccountId(long accountId, int limit) throws SQLException;
+    void insertTransaction(long userId, long accountId, String iban, String description,
+                           java.math.BigDecimal amount, java.time.LocalDate date) throws SQLException;
 }

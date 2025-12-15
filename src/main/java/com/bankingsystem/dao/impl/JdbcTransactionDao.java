@@ -33,6 +33,10 @@ public class JdbcTransactionDao implements TransactionDao {
             ORDER BY transaction_date DESC
             LIMIT ?
             """;
+    private static final String INSERT_SQL = """
+            INSERT INTO transactions (user_id, account_id, iban, transactions, transaction_date, amount)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """;
     @Override
     public List<TransactionRecord> findLatestByUserId(long userId, int limit) throws SQLException {
         List<TransactionRecord> records = new ArrayList<>();
@@ -92,4 +96,20 @@ public class JdbcTransactionDao implements TransactionDao {
         return records;
     }
 
+    @Override
+    public void insertTransaction(long userId, long accountId, String iban, String description, BigDecimal amount, java.time.LocalDate date) throws SQLException {
+        try (Connection connection = DBConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(INSERT_SQL)) {
+            statement.setLong(1, userId);
+            statement.setLong(2, accountId);
+            statement.setString(3, iban);
+            statement.setString(4, description);
+            java.sql.Timestamp timestamp = date == null ?
+                    java.sql.Timestamp.valueOf(LocalDateTime.now()) :
+                    java.sql.Timestamp.valueOf(date.atStartOfDay());
+            statement.setTimestamp(5, timestamp);
+            statement.setBigDecimal(6, amount);
+            statement.executeUpdate();
+        }
+    }
 }

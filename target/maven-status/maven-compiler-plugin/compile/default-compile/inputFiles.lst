@@ -23,5 +23,6 @@
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/service/AuthService.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/service/CustomerDashboardService.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/service/CustomerProfileService.java
+/Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/service/CustomerTransferService.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/util/DBConnectionManager.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/util/DatabaseConfig.java
