@@ -127,19 +127,16 @@
                 <h3>₺ <%= amountFormat.format(totalBalance.abs()) %></h3>
             </div>
             <div class="info-card">
-                <p>USD Equivalent</p>
-                <h3>$ 24,350.00</h3>
+  
             </div>
             <div class="info-card">
-                <p>Active Loans</p>
-                <h3>₺ 45.000,00</h3>
+  
             </div>
         </section>
 
         <section class="transactions">
             <header>
                 <h3>Active Accounts (<%= accounts.size() %>)</h3>
-                <button class="btn-login" style="width:auto;padding:10px 16px;">+ Open New Account</button>
             </header>
             <div class="account-cards">
                 <%
@@ -160,7 +157,7 @@
                         <div class="muted"><%= account.getStatusLabel() %></div>
                     </div>
                     <div class="account-actions">
-                        <button title="Copy IBAN">📋</button>
+                        <!-- <button title="Copy IBAN">📋</button> -->
                         <button title="Details" onclick="window.location.href='<%=request.getContextPath()%>/customer/accounts/detail?accountId=<%= account.getId() %>'">↗</button>
                     </div>
                 </div>

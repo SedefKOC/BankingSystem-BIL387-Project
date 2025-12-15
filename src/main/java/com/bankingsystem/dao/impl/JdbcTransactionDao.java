@@ -26,6 +26,13 @@ public class JdbcTransactionDao implements TransactionDao {
             FROM transactions
             WHERE user_id = ?
             """;
+    private static final String BY_ACCOUNT_SQL = """
+            SELECT transactions, transaction_date, amount
+            FROM transactions
+            WHERE account_id = ?
+            ORDER BY transaction_date DESC
+            LIMIT ?
+            """;
     @Override
     public List<TransactionRecord> findLatestByUserId(long userId, int limit) throws SQLException {
         List<TransactionRecord> records = new ArrayList<>();
@@ -61,6 +68,28 @@ public class JdbcTransactionDao implements TransactionDao {
             }
         }
         return BigDecimal.ZERO;
+    }
+
+    @Override
+    public List<TransactionRecord> findByAccountId(long accountId, int limit) throws SQLException {
+        List<TransactionRecord> records = new ArrayList<>();
+        try (Connection connection = DBConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(BY_ACCOUNT_SQL)) {
+            statement.setLong(1, accountId);
+            statement.setInt(2, limit);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    String description = resultSet.getString("transactions");
+                    LocalDateTime dateTime = null;
+                    if (resultSet.getTimestamp("transaction_date") != null) {
+                        dateTime = resultSet.getTimestamp("transaction_date").toLocalDateTime();
+                    }
+                    BigDecimal amount = resultSet.getBigDecimal("amount");
+                    records.add(new TransactionRecord(description, dateTime, amount));
+                }
+            }
+        }
+        return records;
     }
 
 }

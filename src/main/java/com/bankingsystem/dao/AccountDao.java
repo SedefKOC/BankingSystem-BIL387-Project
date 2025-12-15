@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface AccountDao {
     List<AccountSummary> findByUserId(long userId) throws SQLException;
+    java.util.Optional<AccountSummary> findByIdAndUser(long accountId, long userId) throws SQLException;
 }

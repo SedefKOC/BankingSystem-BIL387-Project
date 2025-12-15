@@ -103,9 +103,9 @@
                 <p>Total Assets Balance</p>
                 <h2 class='<%= totalPositive ? "positive" : "negative" %>'><%= totalText %></h2>
                 <div class="balance__actions">
-                    <button>Deposit Money</button>
+                    <!-- <button>Deposit Money</button>
                     <button>New Transfer</button>
-                    <button>Exchange</button>
+                    <button>Exchange</button> -->
                 </div>
             </div>
         </section>
@@ -113,7 +113,7 @@
         <section class="transactions">
             <header>
                 <h3>Last 5 Transactions</h3>
-                <a href="#">View All Transactions →</a>
+                <!-- <a href="#">View All Transactions →</a> -->
             </header>
             <table>
                 <thead>

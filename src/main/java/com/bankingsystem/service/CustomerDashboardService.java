@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class CustomerDashboardService {
     private final TransactionDao transactionDao;
@@ -44,6 +45,22 @@ public class CustomerDashboardService {
     public List<AccountSummary> getAccounts(long userId) {
         try {
             return accountDao.findByUserId(userId);
+        } catch (SQLException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public Optional<AccountSummary> getAccount(long userId, long accountId) {
+        try {
+            return accountDao.findByIdAndUser(accountId, userId);
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
+    public List<TransactionRecord> getAccountTransactions(long accountId, int limit) {
+        try {
+            return transactionDao.findByAccountId(accountId, limit);
         } catch (SQLException e) {
             return Collections.emptyList();
         }

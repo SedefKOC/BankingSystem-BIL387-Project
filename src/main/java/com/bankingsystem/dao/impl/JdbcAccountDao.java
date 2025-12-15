@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class JdbcAccountDao implements AccountDao {
     private static final String BY_USER_SQL = """
@@ -18,6 +19,11 @@ public class JdbcAccountDao implements AccountDao {
             FROM accounts
             WHERE user_id = ?
             ORDER BY name
+            """;
+    private static final String BY_ID_AND_USER_SQL = """
+            SELECT id, name, iban, currency, balance, status
+            FROM accounts
+            WHERE id = ? AND user_id = ?
             """;
 
     @Override
@@ -33,6 +39,21 @@ public class JdbcAccountDao implements AccountDao {
             }
         }
         return accounts;
+    }
+
+    @Override
+    public Optional<AccountSummary> findByIdAndUser(long accountId, long userId) throws SQLException {
+        try (Connection connection = DBConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(BY_ID_AND_USER_SQL)) {
+            statement.setLong(1, accountId);
+            statement.setLong(2, userId);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(mapAccount(rs));
+            }
+        }
     }
 
     private AccountSummary mapAccount(ResultSet rs) throws SQLException {

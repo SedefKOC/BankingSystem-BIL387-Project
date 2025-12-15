@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class CustomerAccountsServlet extends HttpServlet {
     private final CustomerDashboardService dashboardService = new CustomerDashboardService();
@@ -34,9 +35,9 @@ public class CustomerAccountsServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/");
             return;
         }
-        BigDecimal totalBalance = dashboardService.getTotalBalance(userId);
-        req.setAttribute("totalBalance", totalBalance);
-        req.setAttribute("accounts", dashboardService.getAccounts(userId));
+        List<AccountSummary> accounts = dashboardService.getAccounts(userId);
+        req.setAttribute("accounts", accounts);
+        req.setAttribute("totalBalance", calculateTotalBalance(accounts));
         req.getRequestDispatcher("/WEB-INF/views/customer-accounts.jsp").forward(req, resp);
     }
 
@@ -82,5 +83,15 @@ public class CustomerAccountsServlet extends HttpServlet {
             }
             return "??";
         }
+    }
+
+    private BigDecimal calculateTotalBalance(List<AccountSummary> accounts) {
+        if (accounts == null || accounts.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        return accounts.stream()
+                .map(AccountSummary::getBalance)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

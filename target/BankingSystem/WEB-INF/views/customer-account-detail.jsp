@@ -118,10 +118,10 @@
                 <p><%= account.getIban() %></p>
             </div>
             <div class="detail-actions">
-                <button>Withdraw</button>
+                <!-- <button>Withdraw</button>
                 <button>Deposit</button>
                 <button>Transfer</button>
-                <button>Convert</button>
+                <button>Convert</button> -->
             </div>
         </section>
 
@@ -131,7 +131,7 @@
                     <strong>Transactions</strong>
                     <span class="muted">Son hareketler</span>
                 </div>
-                <button class="btn-login" style="width:auto;padding:10px 16px;">Export PDF</button>
+                <!-- <button class="btn-login" style="width:auto;padding:10px 16px;">Export PDF</button> -->
             </header>
             <table>
                 <thead>
