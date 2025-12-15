@@ -28,7 +28,7 @@
             </div>
         </div>
         <nav class="admin-sidebar__nav">
-            <a class="nav-item active" href="#">Dashboard</a>
+            <a class="nav-item <%= "dashboard".equals(request.getAttribute("adminNavActive")) ? "active" : "" %>" href="<%=request.getContextPath()%>/admin/dashboard">Dashboard</a>
             <a class="nav-item" href="#">Customers</a>
             <a class="nav-item" href="#">Accounts</a>
             <a class="nav-item" href="#">QR Requests</a>

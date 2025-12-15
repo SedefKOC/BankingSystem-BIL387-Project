@@ -20,6 +20,7 @@ public class AdminHomeServlet extends HttpServlet {
         String displayName = asString(resolveDisplayName(session));
         req.setAttribute("homeUsername", sanitize(displayName));
         req.setAttribute("homeInitials", initials(displayName));
+        req.setAttribute("adminNavActive", "dashboard");
         req.getRequestDispatcher("/WEB-INF/views/admin-home.jsp").forward(req, resp);
     }
 

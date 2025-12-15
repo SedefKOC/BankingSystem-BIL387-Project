@@ -67,6 +67,11 @@
     </servlet-mapping>
 
     <servlet-mapping>
+        <servlet-name>AdminHomeServlet</servlet-name>
+        <url-pattern>/admin/dashboard</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
         <servlet-name>CustomerHomeServlet</servlet-name>
         <url-pattern>/customer/home</url-pattern>
     </servlet-mapping>

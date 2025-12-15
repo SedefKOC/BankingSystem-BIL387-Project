@@ -89,7 +89,7 @@
             <span>SedefBank</span>
         </div>
         <nav class="sidebar__nav">
-            <a class="nav-item" href="<%=request.getContextPath()%>/customer/home">Overview</a>
+             <a class="nav-item" href="<%=request.getContextPath()%>/customer/home">Overview</a>
             <a class="nav-item active" href="<%=request.getContextPath()%>/customer/accounts">Accounts</a>
             <a class="nav-item" href="<%=request.getContextPath()%>/customer/transfers">Transfers</a>
             <a class="nav-item" href="#">Market Data</a>
