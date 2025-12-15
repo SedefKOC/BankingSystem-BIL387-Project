@@ -51,6 +51,11 @@
         <servlet-class>com.bankingsystem.controller.CustomerProfileServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>CustomerMarketServlet</servlet-name>
+        <servlet-class>com.bankingsystem.controller.CustomerMarketServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>DatabaseHealthServlet</servlet-name>
         <url-pattern>/health/db</url-pattern>
@@ -94,6 +99,11 @@
     <servlet-mapping>
         <servlet-name>CustomerProfileServlet</servlet-name>
         <url-pattern>/customer/profile</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>CustomerMarketServlet</servlet-name>
+        <url-pattern>/customer/market</url-pattern>
     </servlet-mapping>
 
     <!-- We will register servlets via @WebServlet annotations or explicit mappings here as needed -->

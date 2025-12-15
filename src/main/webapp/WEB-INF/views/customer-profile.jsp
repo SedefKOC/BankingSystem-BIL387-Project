@@ -117,8 +117,8 @@
             <a class="nav-item <%= "overview".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/home">Overview</a>
             <a class="nav-item <%= "accounts".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/accounts">Accounts</a>
             <a class="nav-item <%= "transfers".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/transfers">Transfers</a>
-            <a class="nav-item" href="#">Market Data</a>
-            <a class="nav-item active" href="<%=request.getContextPath()%>/customer/profile">Profile</a>
+            <a class="nav-item <%= "market".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/market">Market Data</a>
+            <a class="nav-item <%= "profile".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/profile">Profile</a>
         </nav>
         <a class="logout" href="<%= request.getContextPath() %>/">Logout</a>
     </aside>
@@ -147,8 +147,8 @@
                 <div class="profile-avatar"><%= initials %></div>
                 <h2><%= username %></h2>
                 <p class="muted">Verified Account</p>
-                <p><strong>Customer ID</strong><br /><%= customerId == null ? "123456789" : customerId %></p>
-                <p><strong>Joined</strong><br />November 2020</p>
+                <!-- <p><strong>Customer ID</strong><br /><%= customerId == null ? "123456789" : customerId %></p>
+                <p><strong>Joined</strong><br />November 2020</p> -->
             </section>
 
             <section class="profile-card">
@@ -197,21 +197,35 @@
             <div class="form-grid" style="margin-top:16px;">
                 <div>
                     <label>Current Password</label>
-                    <input type="password" name="currentPassword" value="********" />
+                    <input type="password" name="currentPassword" />
                 </div>
                 <div>
                     <label>New Password</label>
-                    <input type="password" name="newPassword" placeholder="Enter new password" />
+                    <input type="password" name="newPassword" id="newPassword" placeholder="Enter new password" />
                 </div>
                 <div>
                     <label>Confirm Password</label>
-                    <input type="password" name="confirmPassword" placeholder="Repeat new password" />
+                    <input type="password" id="confirmPassword" placeholder="Repeat new password" />
                 </div>
             </div>
-            <button type="submit" class="btn-login" style="margin-top:16px;width:auto;padding:12px 24px;">Update Password</button>
+            <button type="submit" id="passwordSubmit" class="btn-login" style="margin-top:16px;width:auto;padding:12px 24px;">Update Password</button>
             </form>
         </section>
     </main>
 </div>
+<script>
+    (function () {
+        const submitBtn = document.getElementById('passwordSubmit');
+        if (!submitBtn) return;
+        submitBtn.addEventListener('click', function (event) {
+            const newPassword = document.getElementById('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+            if (newPassword && confirmPassword && newPassword.value !== confirmPassword.value) {
+                event.preventDefault();
+                alert('Yeni şifre ile doğrulama aynı olmalı.');
+            }
+        });
+    })();
+</script>
 </body>
 </html>

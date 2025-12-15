@@ -2,6 +2,7 @@
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/controller/CustomerAccountDetailsServlet.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/controller/CustomerAccountsServlet.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/controller/CustomerHomeServlet.java
+/Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/controller/CustomerMarketServlet.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/controller/CustomerProfileServlet.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/controller/CustomerTransfersServlet.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/controller/DatabaseHealthServlet.java

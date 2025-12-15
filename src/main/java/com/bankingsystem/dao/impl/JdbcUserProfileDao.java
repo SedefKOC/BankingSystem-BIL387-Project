@@ -25,7 +25,7 @@ public class JdbcUserProfileDao implements UserProfileDao {
     private static final String UPDATE_PASSWORD_SQL = """
             UPDATE users
             SET password_hash = ?
-            WHERE id = ?
+            WHERE id = ? AND password_hash = ?
             """;
 
     @Override
@@ -59,11 +59,12 @@ public class JdbcUserProfileDao implements UserProfileDao {
     }
 
     @Override
-    public boolean updatePassword(long userId, String newPassword) throws SQLException {
+    public boolean updatePassword(long userId, String currentPassword, String newPassword) throws SQLException {
         try (Connection connection = DBConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_PASSWORD_SQL)) {
             statement.setString(1, newPassword);
             statement.setLong(2, userId);
+            statement.setString(3, currentPassword);
             return statement.executeUpdate() > 0;
         }
     }

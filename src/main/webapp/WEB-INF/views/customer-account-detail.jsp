@@ -89,18 +89,19 @@
             <span>SedefBank</span>
         </div>
         <nav class="sidebar__nav">
-             <a class="nav-item" href="<%=request.getContextPath()%>/customer/home">Overview</a>
-            <a class="nav-item active" href="<%=request.getContextPath()%>/customer/accounts">Accounts</a>
-            <a class="nav-item" href="<%=request.getContextPath()%>/customer/transfers">Transfers</a>
-            <a class="nav-item" href="#">Market Data</a>
-            <a class="nav-item" href="<%=request.getContextPath()%>/customer/profile">Profile</a>
+            <a class="nav-item <%= "overview".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/home">Overview</a>
+            <a class="nav-item <%= "accounts".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/accounts">Accounts</a>
+            <a class="nav-item <%= "transfers".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/transfers">Transfers</a>
+            <a class="nav-item <%= "market".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/market">Market Data</a>
+            <a class="nav-item <%= "profile".equals(navActive) ? "active" : "" %>" href="<%=request.getContextPath()%>/customer/profile">Profile</a>
         </nav>
         <a class="logout" href="<%= request.getContextPath() %>/">Logout</a>
     </aside>
 
     <main class="content">
         <header class="content__header">
-            <div class="muted">Accounts > <%= account.getIban() %></div>
+            <!-- <div class="muted">Accounts > <%= account.getIban() %></div> -->
+            <div class="muted"><a  href="<%=request.getContextPath()%>/customer/accounts">Accounts</a> > <%= account.getIban() %></div>
             <div class="profile-chip">
                 <div>
                     <strong><%= username %></strong>

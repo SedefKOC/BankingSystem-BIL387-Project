@@ -1,7 +1,9 @@
 com/bankingsystem/entity/UserRole.class
+com/bankingsystem/controller/CustomerMarketServlet$MarketRow.class
 com/bankingsystem/controller/CustomerAccountDetailsServlet.class
 com/bankingsystem/service/CustomerProfileService.class
 com/bankingsystem/dao/impl/JdbcAccountDao.class
+com/bankingsystem/controller/CustomerMarketServlet.class
 com/bankingsystem/entity/TransactionRecord.class
 com/bankingsystem/dao/UserProfileDao.class
 com/bankingsystem/controller/AdminHomeServlet.class

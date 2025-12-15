@@ -65,13 +65,18 @@ public class CustomerProfileServlet extends HttpServlet {
 
     private void handlePasswordUpdate(HttpServletRequest req, long userId) {
         String newPassword = req.getParameter("newPassword");
+        String currentPassword = req.getParameter("currentPassword");
+        if (currentPassword == null || currentPassword.isBlank()) {
+            req.setAttribute("errorMessage", "Mevcut şifre gerekli.");
+            return;
+        }
         if (newPassword == null || newPassword.isBlank()) {
             req.setAttribute("errorMessage", "Yeni şifre boş olamaz.");
             return;
         }
-        boolean success = profileService.updatePassword(userId, newPassword);
+        boolean success = profileService.updatePassword(userId, currentPassword, newPassword);
         req.setAttribute(success ? "successMessage" : "errorMessage",
-                success ? "Şifren güncellendi." : "Şifre güncellenemedi.");
+                success ? "Şifren güncellendi." : "Mevcut şifre hatalı.");
     }
 
     private void renderProfile(HttpServletRequest req, HttpServletResponse resp, HttpSession session) throws ServletException, IOException {
