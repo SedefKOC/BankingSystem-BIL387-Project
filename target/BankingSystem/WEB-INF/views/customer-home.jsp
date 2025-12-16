@@ -64,7 +64,6 @@
         <header class="content__header">
             <div>
                 <p class="subtitle">Welcome, <%= username %></p>
-                <p class="muted">Last login: Today, 09:42 AM</p>
             </div>
                 <div class="profile-chip">
                     <div>
