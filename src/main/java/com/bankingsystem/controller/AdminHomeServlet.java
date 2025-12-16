@@ -1,6 +1,9 @@
 package com.bankingsystem.controller;
 
 import com.bankingsystem.entity.UserRole;
+import com.bankingsystem.service.AdminDashboardService;
+import com.bankingsystem.service.AdminDashboardService.AdminDashboardMetrics;
+import com.bankingsystem.service.AdminDashboardService.AdminTransactionView;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,8 +11,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 
 public class AdminHomeServlet extends HttpServlet {
+    private final AdminDashboardService dashboardService = new AdminDashboardService();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
@@ -21,6 +29,16 @@ public class AdminHomeServlet extends HttpServlet {
         req.setAttribute("homeUsername", sanitize(displayName));
         req.setAttribute("homeInitials", initials(displayName));
         req.setAttribute("adminNavActive", "dashboard");
+        try {
+            AdminDashboardMetrics metrics = dashboardService.loadMetrics();
+            List<AdminTransactionView> transactions = dashboardService.loadRecentTransactions(15);
+            req.setAttribute("adminMetrics", metrics);
+            req.setAttribute("recentAdminTransactions", transactions);
+        } catch (SQLException e) {
+            req.setAttribute("adminDashboardError", "Dashboard verileri yüklenemedi.");
+            req.setAttribute("adminMetrics", null);
+            req.setAttribute("recentAdminTransactions", Collections.emptyList());
+        }
         req.getRequestDispatcher("/WEB-INF/views/admin-home.jsp").forward(req, resp);
     }
 

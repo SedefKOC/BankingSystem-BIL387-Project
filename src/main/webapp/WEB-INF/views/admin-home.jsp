@@ -1,4 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List"%>
+<%@ page import="java.time.format.DateTimeFormatter"%>
+<%@ page import="com.bankingsystem.service.AdminDashboardService.AdminDashboardMetrics"%>
+<%@ page import="com.bankingsystem.service.AdminDashboardService.AdminTransactionView"%>
 <%
     String username = (String) request.getAttribute("homeUsername");
     if (username == null) {
@@ -8,6 +12,18 @@
     if (initials == null || initials.isBlank()) {
         initials = "??";
     }
+    AdminDashboardMetrics metrics = (AdminDashboardMetrics) request.getAttribute("adminMetrics");
+    String dashboardError = (String) request.getAttribute("adminDashboardError");
+    List<AdminTransactionView> recentTransactions = (List<AdminTransactionView>) request.getAttribute("recentAdminTransactions");
+    if (recentTransactions == null) {
+        recentTransactions = java.util.Collections.emptyList();
+    }
+    java.text.DecimalFormat numberFormat = new java.text.DecimalFormat("#,##0");
+    java.text.DecimalFormat amountFormat = new java.text.DecimalFormat("#,##0.00");
+    DateTimeFormatter tableFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm");
+    long activeCustomers = metrics == null ? 0 : metrics.activeCustomers();
+    long activeAccounts = metrics == null ? 0 : metrics.activeAccounts();
+    java.math.BigDecimal todaysVolume = metrics == null ? java.math.BigDecimal.ZERO : metrics.todaysVolume();
 %>
 <!DOCTYPE html>
 <html lang="tr">
@@ -42,12 +58,9 @@
         <header class="admin-header">
             <div>
                 <h1>Admin Dashboard</h1>
-                <p class="muted">Merhaba <%= username %>, sistem durumunu buradan takip edebilirsin.</p>
+                <p class="muted">Hello <%= username %>, you can monitor the system status from here.</p>
             </div>
             <div class="header-actions">
-                <div class="search">
-                    <input type="search" placeholder="Search customers or transaction" />
-                </div>
                 <div class="profile-chip">
                     <div>
                         <strong><%= username %></strong>
@@ -61,86 +74,68 @@
         <section class="admin-stats">
             <article class="stat-card">
                 <p>Active Customers</p>
-                <h2>24,592</h2>
-                <span class="positive">↑ +12% this month</span>
+                <h2><%= numberFormat.format(activeCustomers) %></h2>
             </article>
             <article class="stat-card">
-                <p>Total Active Accounts</p>
-                <h2>38,145</h2>
-                <span class="positive">↑ +5.4% this week</span>
+                <p>Active Accounts</p>
+                <h2><%= numberFormat.format(activeAccounts) %></h2>
             </article>
             <article class="stat-card">
                 <p>Today's Volume</p>
-                <h2>₺ 45.2M</h2>
-                <span class="negative">↓ -2.1% vs yesterday</span>
+                <h2>₺ <%= amountFormat.format(todaysVolume.abs()) %></h2>
+                <span class="<%= todaysVolume.signum() >= 0 ? "positive" : "negative" %>">
+                </span>
             </article>
         </section>
 
         <section class="admin-table">
             <header>
                 <h3>Recent Transactions</h3>
-                <a href="#">View All</a>
             </header>
+            <%
+                if (dashboardError != null) {
+            %>
+            <div class="alert alert-error"><%= dashboardError %></div>
+            <%
+                }
+                if (recentTransactions.isEmpty()) {
+            %>
+            <p class="muted">Henüz işlem kaydı bulunmuyor.</p>
+            <%
+                } else {
+            %>
             <table>
                 <thead>
                 <tr>
                     <th>Transaction ID</th>
                     <th>Customer</th>
-                    <th>Type</th>
+                    <th>Description</th>
                     <th>Amount</th>
                     <th>Date & Time</th>
-                    <th>Status</th>
-                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
+                <%
+                    for (AdminTransactionView tx : recentTransactions) {
+                        boolean positiveAmount = tx.amount().signum() >= 0;
+                %>
                 <tr>
-                    <td>#TRX-98421</td>
-                    <td>Ahmet Kaya</td>
-                    <td>SWIFT Transfer</td>
-                    <td>$ 12,500.00</td>
-                    <td>Nov 21, 2025 14:30</td>
-                    <td><span class="badge badge-success">Completed</span></td>
-                    <td><a href="#">Details</a></td>
+                    <td>#TRX-<%= tx.id() %></td>
+                    <td><%= tx.customerName() %></td>
+                    <td><%= tx.description() %></td>
+                    <td class="<%= positiveAmount ? "positive" : "negative" %>">
+                        ₺ <%= amountFormat.format(tx.amount().abs()) %>
+                    </td>
+                    <td><%= tx.transactionDate() == null ? "-" : tx.transactionDate().format(tableFormatter) %></td>
                 </tr>
-                <tr>
-                    <td>#TRX-98422</td>
-                    <td>Elif Demir</td>
-                    <td>QR Payment</td>
-                    <td>₺ 450.00</td>
-                    <td>Nov 21, 2025 14:28</td>
-                    <td><span class="badge badge-success">Completed</span></td>
-                    <td><a href="#">Details</a></td>
-                </tr>
-                <tr>
-                    <td>#TRX-98423</td>
-                    <td>Tech Solutions Ltd</td>
-                    <td>Corporate Loan</td>
-                    <td>₺ 500,000.00</td>
-                    <td>Nov 21, 2025 14:15</td>
-                    <td><span class="badge badge-warning">Pending Approval</span></td>
-                    <td><a href="#">Review</a></td>
-                </tr>
-                <tr>
-                    <td>#TRX-98424</td>
-                    <td>Mehmet Can</td>
-                    <td>Credit Card Bill</td>
-                    <td>₺ 8,240.50</td>
-                    <td>Nov 21, 2025 14:05</td>
-                    <td><span class="badge badge-error">Failed</span></td>
-                    <td><a href="#">Details</a></td>
-                </tr>
-                <tr>
-                    <td>#TRX-98425</td>
-                    <td>Selin Yılmaz</td>
-                    <td>EFT / Transfer</td>
-                    <td>₺ 2,100.00</td>
-                    <td>Nov 21, 2025 13:55</td>
-                    <td><span class="badge badge-success">Completed</span></td>
-                    <td><a href="#">Details</a></td>
-                </tr>
+                <%
+                    }
+                %>
                 </tbody>
             </table>
+            <%
+                }
+            %>
         </section>
     </main>
 </div>

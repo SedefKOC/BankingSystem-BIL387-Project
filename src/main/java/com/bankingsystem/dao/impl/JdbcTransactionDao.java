@@ -21,9 +21,14 @@ public class JdbcTransactionDao implements TransactionDao {
             ORDER BY transaction_date DESC
             LIMIT ?
             """;
-    private static final String SUM_SQL = """
+    /* private static final String SUM_SQL = """
             SELECT COALESCE(SUM(amount), 0) AS total
             FROM transactions
+            WHERE user_id = ?
+            """; */
+    private static final String SUM_SQL = """
+            SELECT COALESCE(SUM(balance), 0) AS total
+            FROM accounts
             WHERE user_id = ?
             """;
     private static final String BY_ACCOUNT_SQL = """

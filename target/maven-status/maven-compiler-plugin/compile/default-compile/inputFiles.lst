@@ -28,6 +28,7 @@
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/entity/UserAccount.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/entity/UserProfile.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/entity/UserRole.java
+/Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/service/AdminDashboardService.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/service/AuthService.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/service/CustomerDashboardService.java
 /Users/sedefkoc/Documents/BankingSystemFinal/BankingSystem/src/main/java/com/bankingsystem/service/CustomerProfileService.java
