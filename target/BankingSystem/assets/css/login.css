@@ -46,8 +46,8 @@ body {
 .brand .logo-image {
     width: 72px;
     height: 72px;
-    display: block;
-    margin-bottom: 16px;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .brand h1 {

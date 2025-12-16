@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List"%>
-<%@ page import="java.util.Map"%>
+<%@ page import="java.time.format.DateTimeFormatter"%>
+<%@ page import="java.util.Locale"%>
+<%@ page import="com.bankingsystem.entity.AdminAccountView"%>
 <%
     String username = (String) request.getAttribute("homeUsername");
     if (username == null) {
@@ -11,10 +13,13 @@
         initials = "??";
     }
     String navActive = (String) request.getAttribute("adminNavActive");
-    List<Map<String, String>> accounts = (List<Map<String, String>>) request.getAttribute("adminAccounts");
+    String errorMessage = (String) request.getAttribute("adminAccountError");
+    Long filterUserId = (Long) request.getAttribute("accountFilterUserId");
+    List<AdminAccountView> accounts = (List<AdminAccountView>) request.getAttribute("adminAccounts");
     if (accounts == null) {
         accounts = java.util.Collections.emptyList();
     }
+    DateTimeFormatter createdFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH);
 %>
 <!DOCTYPE html>
 <html lang="tr">
@@ -46,12 +51,8 @@
         <header class="admin-header">
             <div>
                 <h1>Account Management</h1>
-                <p class="muted">Hesapları para birimi, durum veya müşteri adına göre takip edebilirsin.</p>
             </div>
             <div class="header-actions">
-                <div class="search">
-                    <input type="search" placeholder="Search accounts, IBAN, or customers" />
-                </div>
                 <div class="profile-chip">
                     <div>
                         <strong><%= username %></strong>
@@ -63,23 +64,6 @@
         </header>
 
         <section class="customer-filter-card">
-            <div class="filter-controls">
-                <input type="text" placeholder="Account Number or Customer Name" />
-                <select>
-                    <option>All Currencies</option>
-                    <option>TRY</option>
-                    <option>USD</option>
-                    <option>EUR</option>
-                    <option>XAU</option>
-                </select>
-                <select>
-                    <option>All Statuses</option>
-                    <option>Active</option>
-                    <option>Frozen</option>
-                    <option>Closed</option>
-                </select>
-                <button class="btn btn-outline">Filter</button>
-            </div>
             <button class="btn btn-primary">+ Open New Account</button>
         </section>
 
@@ -91,56 +75,62 @@
                 <span>CURRENCY</span>
                 <span>BALANCE</span>
                 <span>STATUS</span>
-                <span>ACTIONS</span>
             </div>
             <div class="accounts-table__body">
                 <%
-                    for (Map<String, String> row : accounts) {
-                        String number = row.get("number");
-                        String created = row.get("created");
-                        String customer = row.get("customer");
-                        String initialsCell = row.get("initials");
-                        String type = row.get("type");
-                        String currency = row.get("currency");
-                        String balance = row.get("balance");
-                        String balanceClass = row.get("balanceClass");
-                        String status = row.get("status");
-                        String statusClass = row.get("statusClass");
+                    if (filterUserId != null) {
+                %>
+                <div class="filter-pill">Filtered by User ID: <%= filterUserId %></div>
+                <%
+                    }
+                    if (errorMessage != null) {
+                %>
+                <div class="alert alert-error"><%= errorMessage %></div>
+                <%
+                    }
+                    java.text.DecimalFormat amountFormat = new java.text.DecimalFormat("#,##0.00");
+                    for (AdminAccountView account : accounts) {
+                        boolean positive = account.getBalance() != null && account.getBalance().signum() >= 0;
+                        String balanceClass = positive ? "balance-positive" : "balance-negative";
+                        String status = account.getStatus() == null ? "ACTIVE" : account.getStatus();
+                        String statusClass;
+                        if ("FROZEN".equalsIgnoreCase(status)) {
+                            statusClass = "status-frozen";
+                        } else if ("CLOSED".equalsIgnoreCase(status)) {
+                            statusClass = "status-closed";
+                        } else {
+                            statusClass = "status-active";
+                        }
                 %>
                 <div class="account-row">
                     <div class="account-number">
-                        <strong><%= number %></strong>
-                        <span class="muted"><%= created %></span>
+                        <strong><%= account.getIban() == null ? "-" : account.getIban() %></strong>
+                        <span class="muted"><%= account.getCreatedDate() == null ? "-" : account.getCreatedDate().format(createdFormatter) %></span>
                     </div>
                     <div class="account-customer">
-                        <div class="customer-avatar"><%= initialsCell %></div>
+                        <div class="customer-avatar"><%= account.getCustomerInitials() %></div>
                         <div>
-                            <strong><%= customer %></strong>
+                            <strong><%= account.getCustomerName() %></strong>
                         </div>
                     </div>
-                    <div class="account-type"><%= type %></div>
-                    <div class="account-currency"><%= currency %></div>
-                    <div class="account-balance <%= balanceClass %>"><%= balance %></div>
-                    <div class="account-status">
-                        <span class="status-pill <%= statusClass %>"><%= status %></span>
-                    </div>
-                    <div class="account-actions">
-                        <button class="btn btn-outline">Details</button>
+                    <div class="account-type"><%= account.getAccountType() == null ? "-" : account.getAccountType() %></div>
+                    <div class="account-currency"><%= account.getCurrency() == null ? "-" : account.getCurrency() %></div>
+                    <div class="account-balance <%= balanceClass %>">
                         <%
-                            if ("status-frozen".equals(statusClass)) {
+                            if (account.getBalance() == null) {
                         %>
-                        <button class="btn btn-success">Unfreeze</button>
-                        <%
-                            } else if ("status-closed".equals(statusClass)) {
-                        %>
-                        <button class="btn btn-outline">History</button>
+                        -
                         <%
                             } else {
+                                String currencyLabel = account.getCurrency() == null ? "" : account.getCurrency().toUpperCase();
                         %>
-                        <button class="btn btn-outline">Edit</button>
+                        <%= (positive ? "" : "- ") + currencyLabel + " " + amountFormat.format(account.getBalance().abs()) %>
                         <%
                             }
                         %>
+                    </div>
+                    <div class="account-status">
+                        <span class="status-pill <%= statusClass %>"><%= status %></span>
                     </div>
                 </div>
                 <%

@@ -129,7 +129,7 @@
             <header style="display:flex;justify-content:space-between;align-items:center;">
                 <div>
                     <strong>Transactions</strong>
-                    <span class="muted">Son hareketler</span>
+                    <span class="muted">Last transactions</span>
                 </div>
                 <!-- <button class="btn-login" style="width:auto;padding:10px 16px;">Export PDF</button> -->
             </header>

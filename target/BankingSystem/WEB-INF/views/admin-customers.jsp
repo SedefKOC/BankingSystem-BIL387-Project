@@ -3,6 +3,7 @@
 <%@ page import="java.util.Map"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="java.util.Locale"%>
+<%@ page import="com.bankingsystem.entity.AdminCustomerSummary"%>
 <%
     String username = (String) request.getAttribute("homeUsername");
     if (username == null) {
@@ -13,7 +14,16 @@
         initials = "??";
     }
     String navActive = (String) request.getAttribute("adminNavActive");
-    List<Map<String, Object>> customers = (List<Map<String, Object>>) request.getAttribute("adminCustomers");
+    String errorMessage = (String) request.getAttribute("adminCustomerError");
+    String formError = (String) request.getAttribute("customerFormError");
+    String successMessage = (String) request.getAttribute("customerSuccess");
+    Boolean formVisibleAttr = (Boolean) request.getAttribute("customerFormVisible");
+    boolean formVisible = formVisibleAttr != null && formVisibleAttr;
+    Map<String, String> newCustomerForm = (Map<String, String>) request.getAttribute("newCustomerForm");
+    if (newCustomerForm == null) {
+        newCustomerForm = java.util.Collections.emptyMap();
+    }
+    List<AdminCustomerSummary> customers = (List<AdminCustomerSummary>) request.getAttribute("adminCustomers");
     if (customers == null) {
         customers = java.util.Collections.emptyList();
     }
@@ -49,12 +59,8 @@
         <header class="admin-header">
             <div>
                 <h1>Customer Management</h1>
-                <p class="muted">Müşterileri görüntüleyip durumlarını hızlıca güncelleyebilirsin.</p>
             </div>
             <div class="header-actions">
-                <div class="search">
-                    <input type="search" placeholder="Search customers or transaction" />
-                </div>
                 <div class="profile-chip">
                     <div>
                         <strong><%= username %></strong>
@@ -66,16 +72,56 @@
         </header>
 
         <section class="customer-filter-card">
-            <div class="filter-controls">
-                <input type="search" placeholder="Search by Name, Email, or TCKN" />
-                <select>
-                    <option>All Statuses</option>
-                    <option>Active</option>
-                    <option>Suspended</option>
-                </select>
-                <button class="btn btn-primary">Search</button>
-            </div>
-            <button class="btn btn-secondary">+ Add New Customer</button>
+            <button class="btn btn-secondary" type="button" id="openCustomerForm">+ Add New Customer</button>
+        </section>
+
+        <section class="customer-form-panel <%= formVisible ? "" : "hidden" %>" id="customerFormPanel">
+            <h3>Add New Customer</h3>
+            <p class="muted">You can create a new customer by filling in the basic information and setting a username and password.</p>
+            <%
+                if (formError != null) {
+            %>
+            <div class="alert alert-error"><%= formError %></div>
+            <%
+                }
+            %>
+            <form method="post" class="new-customer-form">
+                <input type="hidden" name="action" value="add" />
+                <div class="form-grid">
+                    <label>
+                        <span>First Name *</span>
+                        <input type="text" name="firstName" required value="<%= newCustomerForm.getOrDefault("firstName", "") %>" />
+                    </label>
+                    <label>
+                        <span>Last Name *</span>
+                        <input type="text" name="lastName" required value="<%= newCustomerForm.getOrDefault("lastName", "") %>" />
+                    </label>
+                    <label>
+                        <span>Email</span>
+                        <input type="email" name="email" value="<%= newCustomerForm.getOrDefault("email", "") %>" />
+                    </label>
+                    <label>
+                        <span>Phone</span>
+                        <input type="text" name="phone" value="<%= newCustomerForm.getOrDefault("phone", "") %>" />
+                    </label>
+                    <label>
+                        <span>National ID</span>
+                        <input type="text" name="nationalId" value="<%= newCustomerForm.getOrDefault("nationalId", "") %>" />
+                    </label>
+                    <label>
+                        <span>Username *</span>
+                        <input type="text" name="username" required value="<%= newCustomerForm.getOrDefault("username", "") %>" />
+                    </label>
+                    <label>
+                        <span>Password *</span>
+                        <input type="password" name="password" required />
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-outline" id="cancelCustomerForm">Cancel</button>
+                </div>
+            </form>
         </section>
 
         <section class="customer-table">
@@ -83,51 +129,40 @@
                 <span>CUSTOMER NAME / ID</span>
                 <span>CONTACT INFO</span>
                 <span>JOIN DATE</span>
-                <span>STATUS</span>
                 <span>ACTIONS</span>
             </div>
             <div class="customer-table__body">
                 <%
-                    for (Map<String, Object> row : customers) {
-                        String customerName = (String) row.get("name");
-                        String customerInitials = (String) row.get("initials");
-                        String idLabel = (String) row.get("idLabel");
-                        String email = (String) row.get("email");
-                        String phone = (String) row.get("phone");
-                        java.time.LocalDate joinDate = (java.time.LocalDate) row.get("joinDate");
-                        String status = (String) row.get("status");
-                        String statusClass = (String) row.get("statusClass");
+                    if (successMessage != null) {
+                %>
+                <div class="alert alert-success"><%= successMessage %></div>
+                <%
+                    }
+                %>
+                <%
+                    if (errorMessage != null) {
+                %>
+                <div class="alert alert-error"><%= errorMessage %></div>
+                <%
+                    }
+                    for (AdminCustomerSummary customer : customers) {
+                        java.time.LocalDate joinDate = customer.getJoinDate();
                 %>
                 <div class="customer-row">
                     <div class="customer-meta">
-                        <div class="customer-avatar"><%= customerInitials %></div>
+                        <div class="customer-avatar"><%= customer.getInitials() %></div>
                         <div>
-                            <strong><%= customerName %></strong>
-                            <span class="muted"><%= idLabel %></span>
+                            <strong><%= customer.getFullName() %></strong><br>
+                            <span class="muted"><%= customer.getIdentifier() == null ? "ID: " + customer.getId() : "ID: " + customer.getIdentifier() %></span>
                         </div>
                     </div>
                     <div class="customer-contact">
-                        <div><%= email %></div>
-                        <small class="muted"><%= phone %></small>
+                        <div><%= customer.getEmail() == null ? "-" : customer.getEmail() %></div>
+                        <small class="muted"><%= customer.getPhone() == null ? "-" : customer.getPhone() %></small>
                     </div>
                     <div class="customer-joined"><%= joinDate == null ? "-" : joinDate.format(joinFormatter) %></div>
-                    <div class="customer-status">
-                        <span class="status-pill <%= statusClass %>"><%= status %></span>
-                    </div>
                     <div class="customer-actions">
-                        <button class="btn btn-outline">View Accounts</button>
-                        <button class="btn btn-outline">Edit</button>
-                        <%
-                            if ("status-suspended".equals(statusClass)) {
-                        %>
-                        <button class="btn btn-success">Reactivate</button>
-                        <%
-                            } else {
-                        %>
-                        <button class="btn btn-danger">Suspend</button>
-                        <%
-                            }
-                        %>
+                        <a class="btn btn-outline" href="<%= request.getContextPath() %>/admin/accounts?userId=<%= customer.getId() %>">View Accounts</a>
                     </div>
                 </div>
                 <%
@@ -142,5 +177,23 @@
         </section>
     </main>
 </div>
+<script>
+    (function () {
+        const formPanel = document.getElementById('customerFormPanel');
+        const openBtn = document.getElementById('openCustomerForm');
+        const cancelBtn = document.getElementById('cancelCustomerForm');
+        const showForm = () => formPanel && formPanel.classList.remove('hidden');
+        const hideForm = () => formPanel && formPanel.classList.add('hidden');
+        if (openBtn) {
+            openBtn.addEventListener('click', showForm);
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', hideForm);
+        }
+        if (formPanel && formPanel.classList.contains('hidden') === false) {
+            // keep visible when server requests it
+        }
+    })();
+</script>
 </body>
 </html>

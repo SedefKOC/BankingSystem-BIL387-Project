@@ -1,5 +1,8 @@
 package com.bankingsystem.controller;
 
+import com.bankingsystem.dao.AdminCustomerDao;
+import com.bankingsystem.dao.impl.JdbcAdminCustomerDao;
+import com.bankingsystem.entity.AdminCustomerSummary;
 import com.bankingsystem.entity.UserRole;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -8,14 +11,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class AdminCustomersServlet extends HttpServlet {
-    private static final List<Map<String, Object>> SAMPLE_CUSTOMERS = createSampleCustomers();
+    private final AdminCustomerDao customerDao;
+
+    public AdminCustomersServlet() {
+        this(new JdbcAdminCustomerDao());
+    }
+
+    public AdminCustomersServlet(AdminCustomerDao customerDao) {
+        this.customerDao = customerDao;
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -24,11 +33,27 @@ public class AdminCustomersServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/");
             return;
         }
-        String displayName = asString(resolveDisplayName(session));
-        req.setAttribute("homeUsername", sanitize(displayName));
-        req.setAttribute("homeInitials", initials(displayName));
-        req.setAttribute("adminNavActive", "customers");
-        req.setAttribute("adminCustomers", SAMPLE_CUSTOMERS);
+        prepareSessionAttributes(req, session);
+        populateCustomers(req);
+        req.getRequestDispatcher("/WEB-INF/views/admin-customers.jsp").forward(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession(false);
+        if (!isAuthorized(session)) {
+            resp.sendRedirect(req.getContextPath() + "/");
+            return;
+        }
+        req.setCharacterEncoding("UTF-8");
+        prepareSessionAttributes(req, session);
+        String action = req.getParameter("action");
+        if ("add".equals(action)) {
+            handleAddCustomer(req);
+        } else {
+            req.setAttribute("customerFormError", "Geçersiz işlem.");
+        }
+        populateCustomers(req);
         req.getRequestDispatcher("/WEB-INF/views/admin-customers.jsp").forward(req, resp);
     }
 
@@ -38,6 +63,53 @@ public class AdminCustomersServlet extends HttpServlet {
         }
         Object role = session.getAttribute("currentUserRole");
         return role == UserRole.ADMIN;
+    }
+
+    private void prepareSessionAttributes(HttpServletRequest req, HttpSession session) {
+        String displayName = asString(resolveDisplayName(session));
+        req.setAttribute("homeUsername", sanitize(displayName));
+        req.setAttribute("homeInitials", initials(displayName));
+        req.setAttribute("adminNavActive", "customers");
+    }
+
+    private void populateCustomers(HttpServletRequest req) {
+        try {
+            List<AdminCustomerSummary> customers = customerDao.findAllCustomers();
+            req.setAttribute("adminCustomers", customers);
+        } catch (java.sql.SQLException e) {
+            req.setAttribute("adminCustomerError", "Müşteri listesi yüklenemedi.");
+            req.setAttribute("adminCustomers", java.util.Collections.emptyList());
+        }
+    }
+
+    private void handleAddCustomer(HttpServletRequest req) {
+        Map<String, String> form = new HashMap<>();
+        String firstName = capture(form, "firstName", req.getParameter("firstName"));
+        String lastName = capture(form, "lastName", req.getParameter("lastName"));
+        String email = capture(form, "email", req.getParameter("email"));
+        String phone = capture(form, "phone", req.getParameter("phone"));
+        String nationalId = capture(form, "nationalId", req.getParameter("nationalId"));
+        String username = capture(form, "username", req.getParameter("username"));
+        String password = capture(form, "password", req.getParameter("password"));
+        req.setAttribute("newCustomerForm", form);
+        req.setAttribute("customerFormVisible", true);
+
+        if (firstName.isEmpty() || lastName.isEmpty()) {
+            req.setAttribute("customerFormError", "Lütfen ad ve soyadı gir.");
+            return;
+        }
+        if (username.isEmpty() || password.isEmpty()) {
+            req.setAttribute("customerFormError", "Kullanıcı adı ve şifre boş bırakılamaz.");
+            return;
+        }
+        try {
+            long newId = customerDao.createCustomer(username, password, firstName, lastName, email, phone, nationalId);
+            req.setAttribute("customerSuccess", firstName + " " + lastName + " (#" + newId + ") sisteme eklendi.");
+            req.setAttribute("newCustomerForm", null);
+            req.setAttribute("customerFormVisible", false);
+        } catch (java.sql.SQLException e) {
+            req.setAttribute("customerFormError", "Müşteri eklenirken hata oluştu. Kullanıcı adı daha önce kullanılmış olabilir.");
+        }
     }
 
     private Object resolveDisplayName(HttpSession session) {
@@ -75,35 +147,9 @@ public class AdminCustomersServlet extends HttpServlet {
                 .replace("'", "&#x27;");
     }
 
-    private static List<Map<String, Object>> createSampleCustomers() {
-        List<Map<String, Object>> list = new ArrayList<>();
-        list.add(customer("Ahmet Demir", "AD", "ID: 12345678901",
-                "ahmet.d@example.com", "+90 565 123 45 67", LocalDate.of(2023, 11, 15),
-                "Active", "status-active"));
-        list.add(customer("Elif Demir", "ED", "ID: 48291283012",
-                "elif.demir@example.com", "+90 532 987 65 43", LocalDate.of(2024, 8, 22),
-                "Active", "status-active"));
-        list.add(customer("Mehmet Can", "MC", "ID: 33210409212",
-                "mehmet.c@company.net", "+90 544 222 11 00", LocalDate.of(2025, 1, 5),
-                "Suspended", "status-suspended"));
-        list.add(customer("Selin Yılmaz", "SY", "ID: 99128347100",
-                "selin.y@example.com", "+90 505 111 22 33", LocalDate.of(2024, 10, 10),
-                "Active", "status-active"));
-        return list;
-    }
-
-    private static Map<String, Object> customer(String name, String initials, String idLabel,
-                                                String email, String phone, LocalDate joinDate,
-                                                String status, String statusClass) {
-        Map<String, Object> row = new HashMap<>();
-        row.put("name", name);
-        row.put("initials", initials);
-        row.put("idLabel", idLabel);
-        row.put("email", email);
-        row.put("phone", phone);
-        row.put("joinDate", joinDate);
-        row.put("status", status);
-        row.put("statusClass", statusClass);
-        return row;
+    private String capture(Map<String, String> map, String key, String raw) {
+        String value = raw == null ? "" : raw.trim();
+        map.put(key, value);
+        return value;
     }
 }
