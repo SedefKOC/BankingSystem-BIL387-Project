@@ -160,8 +160,8 @@ public class AdminAccountsServlet extends HttpServlet {
             req.setAttribute("accountFilterUserId", userId);
             return Optional.of(userId);
         } catch (java.sql.SQLException e) {
-            Logger log = Logger.getLogger(JdbcUserDao.class.getName());
-            log.info("HATA!!!!!!!!!!!!!!!!: " + e);
+            /* Logger log = Logger.getLogger(JdbcUserDao.class.getName());
+            log.info("HATA!!!!!!!!!!!!!!!!: " + e); */
             req.setAttribute("accountFormError", "Hesap oluşturulurken hata oluştu.");
             return Optional.empty();
         }
