@@ -1,8 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List"%>
+<%@ page import="java.util.Map"%>
 <%@ page import="java.time.format.DateTimeFormatter"%>
 <%@ page import="java.util.Locale"%>
 <%@ page import="com.bankingsystem.entity.AdminAccountView"%>
+<%@ page import="com.bankingsystem.entity.AdminCustomerSummary"%>
 <%
     String username = (String) request.getAttribute("homeUsername");
     if (username == null) {
@@ -14,10 +16,22 @@
     }
     String navActive = (String) request.getAttribute("adminNavActive");
     String errorMessage = (String) request.getAttribute("adminAccountError");
+    String successMessage = (String) request.getAttribute("accountSuccess");
+    String formError = (String) request.getAttribute("accountFormError");
+    Boolean accountFormVisibleAttr = (Boolean) request.getAttribute("accountFormVisible");
+    boolean accountFormVisible = accountFormVisibleAttr != null && accountFormVisibleAttr;
+    Map<String, String> newAccountForm = (Map<String, String>) request.getAttribute("newAccountForm");
+    if (newAccountForm == null) {
+        newAccountForm = java.util.Collections.emptyMap();
+    }
     Long filterUserId = (Long) request.getAttribute("accountFilterUserId");
     List<AdminAccountView> accounts = (List<AdminAccountView>) request.getAttribute("adminAccounts");
     if (accounts == null) {
         accounts = java.util.Collections.emptyList();
+    }
+    List<AdminCustomerSummary> accountCustomers = (List<AdminCustomerSummary>) request.getAttribute("accountCustomers");
+    if (accountCustomers == null) {
+        accountCustomers = java.util.Collections.emptyList();
     }
     DateTimeFormatter createdFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ENGLISH);
 %>
@@ -64,7 +78,83 @@
         </header>
 
         <section class="customer-filter-card">
-            <button class="btn btn-primary">+ Open New Account</button>
+            <button class="btn btn-primary" type="button" id="openAccountForm">+ Open New Account</button>
+        </section>
+
+        <section class="account-form-panel <%= accountFormVisible ? "" : "hidden" %>" id="accountFormPanel">
+            <h3>Open New Account</h3>
+            <p class="muted">Hangi müşteri için hangi para biriminde hesap açmak istediğini seç.</p>
+            <%
+                if (formError != null) {
+            %>
+            <div class="alert alert-error"><%= formError %></div>
+            <%
+                }
+            %>
+            <form method="post" class="account-form">
+                <input type="hidden" name="action" value="addAccount" />
+                <div class="form-grid">
+                    <label>
+                        <span>Customer *</span>
+                        <select name="accountUserId" required>
+                            <option value="">Select Customer</option>
+                            <%
+                                for (AdminCustomerSummary customer : accountCustomers) {
+                                    String idStr = String.valueOf(customer.getId());
+                                    String selected = idStr.equals(newAccountForm.get("accountUserId")) ? "selected" : "";
+                            %>
+                            <option value="<%= customer.getId() %>" <%= selected %>><%= customer.getFullName() %></option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </label>
+                    <label>
+                        <span>Account Name *</span>
+                        <input type="text" name="accountName" required value="<%= newAccountForm.getOrDefault("accountName", "") %>" />
+                    </label>
+                    <label>
+                        <span>IBAN</span>
+                        <input type="text" name="iban" value="<%= newAccountForm.getOrDefault("iban", "") %>" />
+                    </label>
+                    <label>
+                        <span>Currency *</span>
+                        <select name="currency" required>
+                            <%
+                                String selectedCurrency = newAccountForm.getOrDefault("currency", "");
+                                String[] currencies = {"TRY", "USD", "EUR", "GBP", "XAU"};
+                                for (String curr : currencies) {
+                            %>
+                            <option value="<%= curr %>" <%= curr.equalsIgnoreCase(selectedCurrency) ? "selected" : "" %>><%= curr %></option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </label>
+                    <label>
+                        <span>Initial Balance</span>
+                        <input type="number" step="0.01" name="balance" value="<%= newAccountForm.getOrDefault("balance", "") %>" />
+                    </label>
+                    <label>
+                        <span>Status</span>
+                        <select name="status">
+                            <%
+                                String selectedStatus = newAccountForm.getOrDefault("status", "ACTIVE").toUpperCase();
+                                String[][] statuses = {{"ACTIVE","Active"},{"FROZEN","Frozen"},{"CLOSED","Closed"}};
+                                for (String[] option : statuses) {
+                            %>
+                            <option value="<%= option[0] %>" <%= option[0].equalsIgnoreCase(selectedStatus) ? "selected" : "" %>><%= option[1] %></option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                    <button type="button" class="btn btn-outline" id="cancelAccountForm">Cancel</button>
+                </div>
+            </form>
         </section>
 
         <section class="accounts-table">
@@ -81,6 +171,11 @@
                     if (filterUserId != null) {
                 %>
                 <div class="filter-pill">Filtered by User ID: <%= filterUserId %></div>
+                <%
+                    }
+                    if (successMessage != null) {
+                %>
+                <div class="alert alert-success"><%= successMessage %></div>
                 <%
                     }
                     if (errorMessage != null) {
@@ -146,4 +241,19 @@
     </main>
 </div>
 </body>
+<script>
+    (function () {
+        const formPanel = document.getElementById('accountFormPanel');
+        const openBtn = document.getElementById('openAccountForm');
+        const cancelBtn = document.getElementById('cancelAccountForm');
+        const showForm = () => formPanel && formPanel.classList.remove('hidden');
+        const hideForm = () => formPanel && formPanel.classList.add('hidden');
+        if (openBtn) {
+            openBtn.addEventListener('click', showForm);
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', hideForm);
+        }
+    })();
+</script>
 </html>

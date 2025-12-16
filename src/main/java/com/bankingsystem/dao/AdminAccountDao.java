@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface AdminAccountDao {
     List<AdminAccountView> findAll(Optional<Long> userId) throws SQLException;
+    long createAccount(long userId, String name, String iban, String currency, java.math.BigDecimal balance, String status) throws SQLException;
 }

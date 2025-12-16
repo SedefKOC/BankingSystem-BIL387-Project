@@ -29,6 +29,11 @@ public class JdbcAdminAccountDao implements AdminAccountDao {
             FROM accounts a
             JOIN users u ON a.user_id = u.id
             """;
+    private static final String INSERT_SQL = """
+            INSERT INTO accounts (user_id, name, iban, currency, balance, status, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, NOW())
+            RETURNING id
+            """;
 
     @Override
     public List<AdminAccountView> findAll(Optional<Long> userId) throws SQLException {
@@ -51,6 +56,25 @@ public class JdbcAdminAccountDao implements AdminAccountDao {
             }
         }
         return accounts;
+    }
+
+    @Override
+    public long createAccount(long userId, String name, String iban, String currency, BigDecimal balance, String status) throws SQLException {
+        try (Connection connection = DBConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(INSERT_SQL)) {
+            statement.setLong(1, userId);
+            statement.setString(2, name);
+            statement.setString(3, iban);
+            statement.setString(4, currency);
+            statement.setBigDecimal(5, balance);
+            statement.setString(6, status);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+            }
+        }
+        throw new SQLException("Account insert failed.");
     }
 
     private AdminAccountView mapRow(ResultSet rs) throws SQLException {
